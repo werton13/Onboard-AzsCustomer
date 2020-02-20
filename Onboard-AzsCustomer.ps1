@@ -412,7 +412,7 @@ $TextBox03.height = 60;
 $TextBox03.BackColor = "PowderBlue";
 $TextBox03.Visible = $False
 
-#Define TextBox1 for input
+#Define TextBox1 for Label1 - 'Имя тенанта Azure Active Directory (до .onmicrosoft.com)';
 $TextBox1 = New-Object “System.Windows.Forms.TextBox”;
 $TextBox1.Left = 210;
 $TextBox1.Top = 210;
@@ -425,7 +425,7 @@ $Testbox1ToolTip.SetToolTip($TextBox1,"Имя тенанта Azure Active Di
 $Testbox1ToolTip.InitialDelay = 0;
 
 
-#Define TextBox2 for input
+#Define TextBox2 for Label2 - 'Azure Stack Subscription Name'
 $TextBox2 = New-Object “System.Windows.Forms.TextBox”;
 $TextBox2.Left = 210;
 $TextBox2.Top = 255;
@@ -437,7 +437,7 @@ $Testbox2ToolTip.ShowAlways =$true;
 $Testbox2ToolTip.SetToolTip($TextBox2,"Наименование организации заказчика, которое было указано при создании заказчика на сайте partner.microsoft.com");
 $Testbox2ToolTip.InitialDelay = 0;
 
-#Define ComboBox for Label3
+#Define ComboBox for Label3 'Макс кол-во Availability set'
 $CValues=@("1","2","3","4");
 $ComboBox1 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox1.DroppedDown = $true;
@@ -445,10 +445,10 @@ $ComboBox1.Left = 210;
 $ComboBox1.Top = 305;
 $ComboBox1.Width =60;
 $ComboBox1.BackColor ="lightblue";
-$ComboBox1.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
+$ComboBox1.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter their own vaalues in combobox
 $ComboBox1.Items.AddRange($CValues);
 
-#Define ComboBox for Label4
+#Define ComboBox for Label4 'Макс кол-во vCPU'
 $CValues=@(1..32);
 $ComboBox2 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox2.DroppedDown = $true;
@@ -459,7 +459,7 @@ $ComboBox2.BackColor ="lightblue";
 $ComboBox2.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
 $ComboBox2.Items.AddRange($CValues);
 
-#Define ComboBox for Label5
+#Define ComboBox for Label5 'Макс кол-во VM Scale Sets'
 $CValues=@(1..4);
 $ComboBox3 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox3.DroppedDown = $true;
@@ -471,7 +471,7 @@ $ComboBox3.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # t
 $ComboBox3.Items.AddRange($CValues);
 
 
-#Define ComboBox for Label6
+#Define ComboBox for Label6 'Макс кол-во Virtual Machines'
 $CValues=@(1..16);
 $ComboBox4 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox4.DroppedDown = $true;
@@ -482,7 +482,7 @@ $ComboBox4.BackColor ="lightblue";
 $ComboBox4.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
 $ComboBox4.Items.AddRange($CValues);
 
-#Define ComboBox for Label7
+#Define ComboBox for Label7 'Макс объем Managed Disks Standard (Gb)'
 $CValues=@(128,256,512,1024,2048,3072,4096,5120,6144,7168,8192,9216,10240,16384,20480);
 $ComboBox5 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox5.DroppedDown = $true;
@@ -493,7 +493,7 @@ $ComboBox5.BackColor ="lightblue";
 $ComboBox5.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
 $ComboBox5.Items.AddRange($CValues);
 
-#Define ComboBox for Label8
+#Define ComboBox for Label8 'Макс объем Managed Disks Premium (Gb)'
 $CValues=@(128,256,512,1024,2048,3072,4096,5120,6144,7168,8192,9216,10240,16384,20480);
 $ComboBox6 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox6.DroppedDown = $true;
@@ -504,7 +504,7 @@ $ComboBox6.BackColor ="lightblue";
 $ComboBox6.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
 $ComboBox6.Items.AddRange($CValues);
 
-#Define ComboBox for Label9
+#Define ComboBox for Label9 'Макс кол-во Virtual Networks'
 $CValues=@(1..4);
 $ComboBox7 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox7.DroppedDown = $true;
@@ -515,7 +515,7 @@ $ComboBox7.BackColor ="lightblue";
 $ComboBox7.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
 $ComboBox7.Items.AddRange($CValues);
 
-#Define ComboBox for Label10
+#Define ComboBox for Label10 'Макс кол-во Network adapters'
 $CValues=@(1..16);
 $ComboBox8 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox8.DroppedDown = $true;
@@ -526,7 +526,7 @@ $ComboBox8.BackColor ="lightblue";
 $ComboBox8.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
 $ComboBox8.Items.AddRange($CValues);
 
-#Define ComboBox for Label11
+#Define ComboBox for Label11 'Макс кол-во Public IP'
 $CValues=@(1..10);
 $ComboBox9 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox9.DroppedDown = $true;
@@ -537,7 +537,7 @@ $ComboBox9.BackColor ="lightblue";
 $ComboBox9.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
 $ComboBox9.Items.AddRange($CValues);
 
-#Define ComboBox for Label12
+#Define ComboBox for Label12 'Макс кол-во Virtual Network Gateways'
 $CValues=@(1,2);
 $ComboBox10 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox10.DroppedDown = $true;
@@ -548,7 +548,7 @@ $ComboBox10.BackColor ="lightblue";
 $ComboBox10.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
 $ComboBox10.Items.AddRange($CValues);
 
-#Define ComboBox for Label13
+#Define ComboBox for Label13 'Макс кол-во Virtual Network Gateway Connections'
 $CValues=@(1,2);
 $ComboBox11 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox11.DroppedDown = $true;
@@ -559,7 +559,7 @@ $ComboBox11.BackColor ="lightblue";
 $ComboBox11.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
 $ComboBox11.Items.AddRange($CValues);
 
-#Define ComboBox for Label14
+#Define ComboBox for Label14 'Макс кол-во Virtual Load Balancers'
 $CValues=@(1..4);
 $ComboBox12 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox12.DroppedDown = $true;
@@ -570,7 +570,7 @@ $ComboBox12.BackColor ="lightblue";
 $ComboBox12.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
 $ComboBox12.Items.AddRange($CValues);
 
-#Define ComboBox for Label15
+#Define ComboBox for Label15 'Макс кол-во Network Security Groups'
 $CValues=@(1..10);
 $ComboBox13 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox13.DroppedDown = $true;
@@ -581,7 +581,7 @@ $ComboBox13.BackColor ="lightblue";
 $ComboBox13.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
 $ComboBox13.Items.AddRange($CValues);
 
-#Define ComboBox for Label16
+#Define ComboBox for Label16 'Макс объем Unmanaged Storage (Gb)'
 $CValues=@(128,256,512,1024,2048,3072,4096,5120,6144,7168,8192,9216,10240,16384,20480);
 $ComboBox14 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox14.DroppedDown = $true;
@@ -592,7 +592,7 @@ $ComboBox14.BackColor ="lightblue";
 $ComboBox14.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
 $ComboBox14.Items.AddRange($CValues);
 
-#Define ComboBox for Label17
+#Define ComboBox for Label17  'Макс кол-во Storage Accounts';
 $CValues=@(1..10);
 $ComboBox15 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox15.DroppedDown = $true;
@@ -603,7 +603,7 @@ $ComboBox15.BackColor ="lightblue";
 $ComboBox15.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
 $ComboBox15.Items.AddRange($CValues);
 
-#Define ComboBox for Label18
+#Define ComboBox for Label18 'Макс объем ресурсов SQL as Service'
 $CValues=@("10GB 5DB","10GB 10DBs","100GB 10DBs");
 $ComboBox16 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox16.DroppedDown = $true;
@@ -614,7 +614,7 @@ $ComboBox16.BackColor ="lightblue";
 $ComboBox16.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
 $ComboBox16.Items.AddRange($CValues);
 
-#Define ComboBox for Label19
+#Define ComboBox for Label19 'Макс объем ресурсов Web Apps'
 $CValues=@("1 App SP","3 App SP","Evaluation");
 $ComboBox17 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox17.DroppedDown = $true;
@@ -646,10 +646,10 @@ $eventHandler = [System.EventHandler]{
                                         $TextBox2.Text;
                                         $TextBox3.Text;
 ########################################--------------------create all stuff here-------------######################################
-#   0) Setup all variables from user inputs
+#   0) Setup all variables from user inputs +
 #   1) Login to Azure Stack default provider subscription
 #   2) Retrieving billing subscription account password from Azure Stack Key Vault
-#   3) Login to  billing subscription 
+#   3) Add Azure Environment for Billing Subscription
 #   4) Register Customer AAD Subscription ID in Azure Stack billing subscription using 
 #   5) Logout from billing subscription
 #   6) Onboard Customer AAD Subscription ID to Azure Stack  provider AAD subscription
@@ -659,54 +659,96 @@ $eventHandler = [System.EventHandler]{
 #   10) Create Resource Group
 #   11) Create Quotas according Subscription Operator inputs
 #   12) Create Plans
-#   13) Create offer 
+#   13) Create Offer 
 #   14) Create customer AAD tenant subscription to Azure Stack offer
 #
 #import modules
 Import-Module C:\AzureStack\AzureStack-Tools-master\Connect\AzureStack.Connect.psm1
 Import-Module C:\AzureStack\AzureStack-Tools-master\Identity\AzureStack.Identity.psm1 
-# Register an Azure Resource Manager environment that targets your Azure Stack instance. Get your Azure       Resource Manager endpoint value from your service provider.
-    Add-AzureRMEnvironment -Name "AzureStackAdmin" -ArmEndpoint "https://adminmanagement.azuremsk.ec.mts.ru" `
-      -AzureKeyVaultDnsSuffix adminvault.azuremsk.ec.mts.ru `
-      -AzureKeyVaultServiceEndpointResourceId https://adminvault.azuremsk.ec.mts.ru
-# Set your tenant name
-    $AuthEndpoint = (Get-AzureRmEnvironment -Name "AzureStackAdmin").ActiveDirectoryAuthority.TrimEnd('/')
-    $AADTenantName = "iurnvgru.onmicrosoft.com"
-    $TenantId = (invoke-restmethod "$($AuthEndpoint)/$($AADTenantName)/.well-known/openid-configuration").issuer.TrimEnd('/').Split('/')[-1]
-# After signing in to your environment, Azure Stack cmdlets
-    # can be easily targeted at your Azure Stack instance.
-    Add-AzureRmAccount -EnvironmentName "AzureStackAdmin" -TenantId $TenantId
+
 #######################################################################################################################################################
-#                ВВЕДИТЕ ПАРАМЕТРЫ ДЛЯ СОЗДАНИЯ НОВОГО ПОДПИСЧИКА НИЖЕ
-$TenantName        = "tumocenter"                               # -> имя тенанта Azure Active Directory (до .onmicrosoft.com), которое было выбрано  при создании заказчика на сайте partner.microsoft.com
-$SubscriptionName  = "ООО «Платформа креативного обучения»"     # -> наименование организации заказчика, которое было указано при создании заказчика на сайте partner.microsoft.com
+#   ПАРАМЕТРЫ ПОДПИСКИ ДЛЯ СОЗДАНИЯ НОВОГО ПОДПИСЧИКА НИЖЕ
+$TenantName            = $TextBox1.text+"@onmicrosoft.com"          # -> имя тенанта Azure Active Directory (до @onmicrosoft.com), которое было выбрано  при создании заказчика на сайте partner.microsoft.com
+$SubscriptionName      = $TextBox2.Text     # -> наименование организации заказчика, которое было указано при создании заказчика на сайте partner.microsoft.com
+$CustomerAzureSubscrID = $TextBox04.text #not defined yet
+$CustomerAADAdmin      = "admin$TenantName"
 
-
-#ВВЕДИТЕ ЗНАЧЕНИЯ ИЗ ЗАЯВКИ НА СОЗДАНИЕ ТЕНАНТА AZURE STACK
+#  0) УСТАНОВКА ПАРАМЕТРОВ КВОТ НА ВЫЧИСЛИТЕЛЬНЫЕ РЕСУРСЫ ТЕНАНТА AZURE STACK
+#----------------------------------------------------------------------
    
-$IaaSCQAvailSetCount   =   1 #
-$IaaSCQCoresCount      =   8 #
-$IaaSCQVMScaleSetCount =   2 #
-$IaaSCQVMMachineCount  =   4 #
-$IaaSCQSTDStorageSize  =   1024 #
-$IaaSCQPREMStorageSize =   1024 #
-$IaaS_NQ_VNetCount     = 1     #
-$IaaS_NQ_NicsCount     = 4     #
-$IaaS_NQ_PIPCount      = 1     #
-$IaaS_NQ_VNGCount      = 1     #
-$IaaS_NQ_VNGConCount   = 1     #
-$IaaS_NQ_LBCount       = 2     #
-$IaaS_NQ_SGCount       = 5     #
-$IaaS_SQ_Capacity      = 512   #
-$IaaS_SQ_SACount       = 2     #
-$SQLQuotaName = "10GB5DB"
-$WebQuotaName = "ext-3AppSP-web"
-#Also Available:
-# "10GB10DB"
+$IaaS_CQ_AvailSetCount   =   [int]$ComboBox1.SelectedValue # 
+$IaaS_CQ_CoresCount      =   [int]$ComboBox2.SelectedValue #
+$IaaS_CQ_VMScaleSetCount =   [int]$ComboBox3.SelectedValue  #
+$IaaS_CQ_VMMachineCount  =   [int]$ComboBox4.SelectedValue  #
+$IaaS_CQ_STDStorageSize  =   [int]$ComboBox5.SelectedValue  #
+$IaaS_CQ_PREMStorageSize =   [int]$ComboBox6.SelectedValue  #
+$IaaS_NQ_VNetCount       =   [int]$ComboBox7.SelectedValue  #
+$IaaS_NQ_NicsCount       =   [int]$ComboBox8.SelectedValue  #
+$IaaS_NQ_PIPCount        =   [int]$ComboBox9.SelectedValue  #
+$IaaS_NQ_VNGCount        =   [int]$ComboBox10.SelectedValue #
+$IaaS_NQ_VNGConCount     =   [int]$ComboBox11.SelectedValue #
+$IaaS_NQ_LBCount         =   [int]$ComboBox12.SelectedValue     #
+$IaaS_NQ_SGCount         =   [int]$ComboBox13.SelectedValue      #
+$IaaS_SQ_Capacity        =   [int]$ComboBox14.SelectedValue   #
+$IaaS_SQ_SACount         =   [int]$ComboBox15.SelectedValue      #
+$SQLQuotaName            =   $ComboBox16.SelectedValue 
+$WebQuotaName            =   $ComboBox17.SelectedValue 
 #
+###################################################################################################################
+# 1) Login to Azure Stack default provider subscription
 #
-#                                 КОНЕЦ БЛОКА ВВОДА ПАРАМЕТРОВ
-##################################################################################################################
+#    Register an Azure Resource Manager environment that targets your Azure Stack instance. 
+
+Add-AzureRMEnvironment `
+-Name "AzureStackAdmin" `
+-ArmEndpoint "https://adminmanagement.azuremsk.ec.mts.ru" `
+                    -AzureKeyVaultDnsSuffix adminvault.azuremsk.ec.mts.ru `
+                    -AzureKeyVaultServiceEndpointResourceId https://adminvault.azuremsk.ec.mts.ru
+# Set your tenant name
+$AuthEndpoint = (Get-AzureRmEnvironment -Name "AzureStackAdmin").ActiveDirectoryAuthority.TrimEnd('/')
+$AADTenantName = "iurnvgru.onmicrosoft.com"
+$TenantId = (invoke-restmethod "$($AuthEndpoint)/$($AADTenantName)/.well-known/openid-configuration").issuer.TrimEnd('/').Split('/')[-1]
+ 
+$AZSSubscrUserName = $TextBox01.Text                                    
+$secretpass    =  ConvertTo-SecureString -String $TextBox02.Text -AsPlainText -Force
+$AZSCredential =  New-Object System.Management.Automation.PSCredential($AZSSubscrUserName, $secretpass)
+Add-AzureRmAccount -EnvironmentName "AzureStackAdmin" -TenantId $TenantId -Credential $AZSCredential -ErrorAction Stop
+
+# 2) Retrieving billing subscription account password from Azure Stack Key Vault---#################################
+
+$AzureBillSubscrPwd =  (Get-AzureKeyVaultSecret -VaultName 'ProvKeyVault1' -Name stackbilling).SecretValue
+
+# 3) -Add Azure Environment for Billing Subscription-------------------------------#################################
+
+$AuthEndpointAZ  = (Get-AzureRmEnvironment -Name "AzureCloud").ActiveDirectoryAuthority.TrimEnd('/')
+$AADTenantNameAZ = "iurmtspjsc.onmicrosoft.com"
+$AzureTenantId   = (invoke-restmethod "$($AuthEndpoint)/$($AADTenantName)/.well-known/openid-configuration").issuer.TrimEnd('/').Split('/')[-1]
+
+
+$AzureCredential = New-Object System.Management.Automation.PSCredential('stack_billing@iurmtspjsc.onmicrosoft.com', $AzureBillSubscrPwd)
+#Add-AzureRmAccount -EnvironmentName "AzureCloud" -TenantId $AzureTenantId -Credential $AzureCredential
+Login-AzAccount -Environment "AzureCloud" -Credential $AzureCredential
+#Get-AzureRmContext -ListAvailable | ?{$_.Environment -like "AzureStackadminLnv5" -and $_.Subscription -like "NameOftheSub"}
+#$env = Get-AzureRmContext -ListAvailable | ?{$_.Environment -like "AzureCloud" }
+
+$AzureContext      = Get-AzureRmContext -ListAvailable | ?{$_.Environment -like "AzureCloud" }
+$AzureStackContext = Get-AzureRmContext -ListAvailable | ?{$_.Environment -match "AzureStackAdmin" }
+
+set-azurermcontext -Context $AzureContext # actions below are performing in context 'stack_billing@iurmtspjsc.onmicrosoft.com' 
+
+$BillSubscrID = (Get-AzureRmSubscription).Id
+$BillRG       = "azsReg-azuremsk"
+$RegProv      = "providers/Microsoft.AzureStack/registrations/"
+$AZSRegID     = "AzureStack-ed2f4ae8-4eff-499a-8316-e3dda4bf8a7f"
+
+$ApiVersion   = "2017-06-01"
+$RegResourceID = "/subscriptions/$BillSubscrID/resourceGroups/$BillRG/$RegProv/$AZSRegID/customerSubscriptions/$CustomerAzureSubscrID"
+New-AzureRmResource -ResourceId $RegResourceID -ApiVersion $ApiVersion 
+
+
+#######################################################################################################################
+
+
 $CustomerAzureTenantID = "$TenantName.onmicrosoft.com"
 $CustomerSubscriptionOwner ="cloudadmin@$CustomerAzureTenantID"
 $Location          = "azuremsk"
@@ -717,12 +759,12 @@ New-AzureRmResourceGroup -Location $Location -Name $RGName 
 #set quotas
 
 New-AzsComputeQuota -Name "ext-$TenantName-cq" `
-                    -AvailabilitySetCount $IaaSAvailSetCount `
-                    -CoresCount $IaaSCoresCount `
-                    -VmScaleSetCount $IaaSVMScaleSetCount `
-                    -VirtualMachineCount $IaaSVMMachineCount `
-                    -StandardManagedDiskAndSnapshotSize $IaaSSTDStorageSize `
-                    -PremiumManagedDiskAndSnapshotSize $IaaSPREMStorageSize `
+                    -AvailabilitySetCount $IaaS_CQ_AvailSetCount `
+                    -CoresCount $IaaS_CQ_CoresCount `
+                    -VmScaleSetCount $IaaS_CQ_VMScaleSetCount `
+                    -VirtualMachineCount $IaaS_CQ_VMMachineCount `
+                    -StandardManagedDiskAndSnapshotSize $IaaS_CQ_STDStorageSize `
+                    -PremiumManagedDiskAndSnapshotSize $IaaS_CQ_PREMStorageSize `
                     -location $Location
 New-AzsNetworkQuota -Name "ext-$TenantName-nq" `
                     -MaxVnetsPerSubscription $IaaS_NQ_VNetCount `
