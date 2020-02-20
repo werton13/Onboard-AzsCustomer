@@ -18,8 +18,8 @@ $form = New-Object Windows.Forms.Form -Property @{
     
 }
 $errorprovider1 = New-Object "System.Windows.Forms.ErrorProvider";
-#$errorprovider2 = New-Object "System.Windows.Forms.ErrorProvider";
-#$errorprovider2.Icon = "C:\Temp\correct.ico";
+$errorprovider2 = New-Object "System.Windows.Forms.ErrorProvider";
+$errorprovider2.Icon = "C:\Temp\correct.ico";
 #Helper functions##
 function Test-IsEmptyTrim ([string] $field) #to check if field is empty or consist from spaces
 {
@@ -99,7 +99,7 @@ finally{
     }
 
 
-$errorprovider2.Icon = "C:\Temp\correct.ico";
+#$errorprovider2.Icon = "C:\Temp\correct.ico";
 
 #$MyApp = New-Object System.Windows.Forms.Form
 #$checkBox1 = New-Object System.Windows.Forms.CheckBox
@@ -387,6 +387,21 @@ $Testbox02ToolTip.ShowAlways =$true;
 $Testbox02ToolTip.SetToolTip($TextBox02,"Пароль для у/з Azure Stack с полномочиями на управление подписками");
 $Testbox02ToolTip.InitialDelay = 0;
 
+$TextBox02.add_Validating({
+      
+        $_.Cancel = Test-IsEmptyTrim $TextBox02.Text
+        if($_.Cancel) {
+                       #Display an error message
+                       $errorprovider1.SetError($TextBox02, "Please enter your password.");
+                      }
+        else
+                      {
+                      #Clear the error message
+                      $errorprovider1.SetError($TextBox02, "");
+                      $errorprovider2.SetError($TextBox02,"correct")
+                      }
+        }) 
+
 #Define TextBox03 for print output for Azure Stack credential validation
 $TextBox03 = New-Object "System.Windows.Forms.TextBox";
 $TextBox03.Left = 210;
@@ -630,6 +645,172 @@ $eventHandler = [System.EventHandler]{
                                         $TextBox1.Text;
                                         $TextBox2.Text;
                                         $TextBox3.Text;
+########################################--------------------create all stuff here-------------######################################
+#   0) Setup all variables from user inputs
+#   1) Login to Azure Stack default provider subscription
+#   2) Retrieving billing subscription account password from Azure Stack Key Vault
+#   3) Login to  billing subscription 
+#   4) Register Customer AAD Subscription ID in Azure Stack billing subscription using 
+#   5) Logout from billing subscription
+#   6) Onboard Customer AAD Subscription ID to Azure Stack  provider AAD subscription
+#   7) Login to  Customer AAD Subscription
+#   8) Register Azure Stack Provider AAD Subscription ID to Customer AAD subscription
+#   9) Create 'cloudadmin' account in Customer AAD subscription and assign 'Global Admins' role to this account
+#   10) Create Resource Group
+#   11) Create Quotas according Subscription Operator inputs
+#   12) Create Plans
+#   13) Create offer 
+#   14) Create customer AAD tenant subscription to Azure Stack offer
+#
+#import modules
+Import-Module C:\AzureStack\AzureStack-Tools-master\Connect\AzureStack.Connect.psm1
+Import-Module C:\AzureStack\AzureStack-Tools-master\Identity\AzureStack.Identity.psm1 
+# Register an Azure Resource Manager environment that targets your Azure Stack instance. Get your Azure       Resource Manager endpoint value from your service provider.
+    Add-AzureRMEnvironment -Name "AzureStackAdmin" -ArmEndpoint "https://adminmanagement.azuremsk.ec.mts.ru" `
+      -AzureKeyVaultDnsSuffix adminvault.azuremsk.ec.mts.ru `
+      -AzureKeyVaultServiceEndpointResourceId https://adminvault.azuremsk.ec.mts.ru
+# Set your tenant name
+    $AuthEndpoint = (Get-AzureRmEnvironment -Name "AzureStackAdmin").ActiveDirectoryAuthority.TrimEnd('/')
+    $AADTenantName = "iurnvgru.onmicrosoft.com"
+    $TenantId = (invoke-restmethod "$($AuthEndpoint)/$($AADTenantName)/.well-known/openid-configuration").issuer.TrimEnd('/').Split('/')[-1]
+# After signing in to your environment, Azure Stack cmdlets
+    # can be easily targeted at your Azure Stack instance.
+    Add-AzureRmAccount -EnvironmentName "AzureStackAdmin" -TenantId $TenantId
+#######################################################################################################################################################
+#                ВВЕДИТЕ ПАРАМЕТРЫ ДЛЯ СОЗДАНИЯ НОВОГО ПОДПИСЧИКА НИЖЕ
+$TenantName        = "tumocenter"                               # -> имя тенанта Azure Active Directory (до .onmicrosoft.com), которое было выбрано  при создании заказчика на сайте partner.microsoft.com
+$SubscriptionName  = "ООО «Платформа креативного обучения»"     # -> наименование организации заказчика, которое было указано при создании заказчика на сайте partner.microsoft.com
+
+
+#ВВЕДИТЕ ЗНАЧЕНИЯ ИЗ ЗАЯВКИ НА СОЗДАНИЕ ТЕНАНТА AZURE STACK
+   
+$IaaSCQAvailSetCount   =   1 #
+$IaaSCQCoresCount      =   8 #
+$IaaSCQVMScaleSetCount =   2 #
+$IaaSCQVMMachineCount  =   4 #
+$IaaSCQSTDStorageSize  =   1024 #
+$IaaSCQPREMStorageSize =   1024 #
+$IaaS_NQ_VNetCount     = 1     #
+$IaaS_NQ_NicsCount     = 4     #
+$IaaS_NQ_PIPCount      = 1     #
+$IaaS_NQ_VNGCount      = 1     #
+$IaaS_NQ_VNGConCount   = 1     #
+$IaaS_NQ_LBCount       = 2     #
+$IaaS_NQ_SGCount       = 5     #
+$IaaS_SQ_Capacity      = 512   #
+$IaaS_SQ_SACount       = 2     #
+$SQLQuotaName = "10GB5DB"
+$WebQuotaName = "ext-3AppSP-web"
+#Also Available:
+# "10GB10DB"
+#
+#
+#                                 КОНЕЦ БЛОКА ВВОДА ПАРАМЕТРОВ
+##################################################################################################################
+$CustomerAzureTenantID = "$TenantName.onmicrosoft.com"
+$CustomerSubscriptionOwner ="cloudadmin@$CustomerAzureTenantID"
+$Location          = "azuremsk"
+$ProvSubID         = (Get-AzureRmSubscription | Where-Object { $_.Name -eq "Default Provider Subscription" }).id
+$RGName            = "ext-$TenantName-rg"
+#create ResourceGroup
+New-AzureRmResourceGroup -Location $Location -Name $RGName 
+#set quotas
+
+New-AzsComputeQuota -Name "ext-$TenantName-cq" `
+                    -AvailabilitySetCount $IaaSAvailSetCount `
+                    -CoresCount $IaaSCoresCount `
+                    -VmScaleSetCount $IaaSVMScaleSetCount `
+                    -VirtualMachineCount $IaaSVMMachineCount `
+                    -StandardManagedDiskAndSnapshotSize $IaaSSTDStorageSize `
+                    -PremiumManagedDiskAndSnapshotSize $IaaSPREMStorageSize `
+                    -location $Location
+New-AzsNetworkQuota -Name "ext-$TenantName-nq" `
+                    -MaxVnetsPerSubscription $IaaS_NQ_VNetCount `
+                    -MaxNicsPerSubscription $IaaS_NQ_NicsCount `
+                    -MaxPublicIpsPerSubscription $IaaS_NQ_PIPCount `
+                    -MaxVirtualNetworkGatewaysPerSubscription $IaaS_NQ_VNGCount `
+                    -MaxVirtualNetworkGatewayConnectionsPerSubscription $IaaS_NQ_VNGConCount `
+                    -MaxLoadBalancersPerSubscription $IaaS_NQ_LBCount `
+                    -MaxSecurityGroupsPerSubscription $IaaS_NQ_SGCount `
+                    -location $Location
+New-AzsStorageQuota -Name "ext-$TenantName-sq" `
+                    -CapacityInGb $IaaS_SQ_Capacity `
+                    -NumberOfStorageAccounts $IaaS_SQ_SACount `
+                    -Location $location                 
+
+
+$KeyVaultQuotaID        = (Get-AzsKeyVaultQuota).id
+$IaaSComputeQuotaID     = (Get-AzsComputeQuota -Name "ext-$TenantName-cq").id
+$IaaSNetworkQuotaID     = (Get-AzsNetworkQuota -Name "ext-$TenantName-nq").id
+$IaaSStorageQuotaID     = (Get-AzsStorageQuota -Name "ext-$TenantName-sq").id
+$IaaS_Quotas = @()
+$SQL_Quotas  = @()
+$WEBL_Quotas = @()
+$IaaS_Quotas += $KeyVaultQuotaID
+$IaaS_Quotas += $IaaSComputeQuotaID
+$IaaS_Quotas += $IaaSNetworkQuotaID
+$IaaS_Quotas += $IaaSStorageQuotaID 
+$sqlDatabaseAdapterNamespace = "Microsoft.SQLAdapter.Admin"
+$sqlLocation = $Location
+$sqlQuotaName = $SQLQuotaName
+$sqlQuotaId = '/subscriptions/{0}/providers/{1}/locations/{2}/quotas/{3}' -f $ProvSubID, $sqlDatabaseAdapterNamespace, $sqlLocation, $sqlQuotaName
+$SQL_Quotas += $SQLQuotaId
+$appServiceNamespace = "Microsoft.Web.Admin"
+$appServiceLocation = "$Location"
+$appServiceQuotaName = $WebQuotaName
+$appServiceQuotaId = '/subscriptions/{0}/providers/{1}/locations/{2}/quotas/{3}' -f $ProvSubID, $appServiceNamespace, $appServiceLocation, $appServiceQuotaName
+$WEBL_Quotas += $appServiceQuotaId
+
+
+#create Plans
+New-AzsPlan -Name "ext-$TenantName-plan-iaas" `
+    -ResourceGroupName $RGName `
+    -QuotaIds  $IaaS_Quotas  `
+    -Location $Location `
+    -DisplayName "ext-$TenantName-plan-iaas" 
+New-AzsPlan -Name "ext-$TenantName-plan-sql" `
+    -ResourceGroupName $RGName `
+    -QuotaIds  $SQL_Quotas  `
+    -Location $Location `
+    -DisplayName "ext-$TenantName-plan-sql" 
+New-AzsPlan -Name "ext-$TenantName-plan-web" `
+    -ResourceGroupName $RGName `
+    -QuotaIds  $WEBL_Quotas  `
+    -Location $Location `
+    -DisplayName "ext-$TenantName-plan-web" 
+
+$IaaS_PlanID     = (Get-AzsPlan -Name "ext-$TenantName-plan-iaas" -ResourceGroupName $RGName).id
+$SQL_PlanID      = (Get-AzsPlan -Name "ext-$TenantName-plan-sql"  -ResourceGroupName $RGName).id
+$WEB_PlanID      = (Get-AzsPlan -Name "ext-$TenantName-plan-web"  -ResourceGroupName $RGName).id
+$Plans2Offer = @()
+$Plans2Offer += $IaaS_PlanID
+$Plans2Offer += $SQL_PlanID
+$Plans2Offer += $WEB_PlanID 
+
+#create Offer
+New-AzsOffer -Name "ext-$TenantName-offer" `
+             -DisplayName "ext-$TenantName-offer" `
+             -State Private `
+             -BasePlanIds $Plans2Offer `
+             -ResourceGroupName $RGName `
+             -Location $Location
+$OfferID = (Get-AzsManagedOffer -Name "ext-$TenantName-offer" -ResourceGroupName $RGName).Id
+              
+#create CustomerSubscription
+New-AzsUserSubscription -Owner $CustomerSubscriptionOwner `
+                        -TenantId $CustomerAzureTenantID `
+                        -OfferId $OfferID `
+                        -DisplayName $SubscriptionName
+
+
+
+
+
+
+#####################################################################################################################################
+
+
+
                                         $Form.Close();
                                     };
 $CreateButton.Add_Click($eventHandler) ;
@@ -659,37 +840,6 @@ $СhkCredEventHandler = [System.EventHandler]{
     $TextBox03.ReadOnly =$true
 
 
-
-
-                                            
- <#  old  code    
-                                            #Clear-Variable AZSSubscrUserName 
-                                            #Clear-Variable secretpass
-                                            #Clear-Variable AZSCredential
-                                            #Clear-AzureRmContext -Force -ErrorAction SilentlyContinue
-                                     
-                                            Add-AzureRMEnvironment `
-                                                                -Name "AzureStackAdmin" `
-                                                                -ArmEndpoint "https://adminmanagement.azuremsk.ec.mts.ru" `
-                                                                -AzureKeyVaultDnsSuffix adminvault.azuremsk.ec.mts.ru `
-                                                                -AzureKeyVaultServiceEndpointResourceId https://adminvault.azuremsk.ec.mts.ru
-                                            # Set your tenant name
-                                            $AuthEndpoint = (Get-AzureRmEnvironment -Name "AzureStackAdmin").ActiveDirectoryAuthority.TrimEnd('/')
-                                            $AADTenantName = "iurnvgru.onmicrosoft.com"
-                                            $TenantId = (invoke-restmethod "$($AuthEndpoint)/$($AADTenantName)/.well-known/openid-configuration").issuer.TrimEnd('/').Split('/')[-1]
-                                            $AZSSubscrUserName = $TextBox01.Text                                            
-                                            $secretpass    =  ConvertTo-SecureString -String $TextBox02.Text -AsPlainText -Force
-                                            $AZSCredential =  New-Object System.Management.Automation.PSCredential($AZSSubscrUserName, $secretpass)
-                                            Add-AzureRmAccount -EnvironmentName "AzureStackAdmin" -TenantId $TenantId -Credential $AZSCredential
-                                            #Login-AzAccount -Environment "AzureStackAdmin" -Credential $AZSCredential
-                                            $AzureRMContextSubName =(Get-AzureRmContext -ListAvailable |? {$_.account -match "$AZSSubscrUserName" }).Subscription.Name
-                                            if($AzureRMContextSubName -eq "Default Provider Subscription"){
-                                                                                                           $CredCheckState ="correct"
-                                                                                                           Write-Host -ForegroundColor green "Account authenticated and correct permissions granted"
-                                                                                                          }
-                                            elseif (!$AzureRMContextSubName) {                                             
-                                                                             Write-Host -ForegroundColor red "Account authenticated but have nt assigned correct permissions"
-                                                                             } 
 
 #>
                                                                             };
