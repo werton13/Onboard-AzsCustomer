@@ -653,7 +653,7 @@ $eventHandler = [System.EventHandler]{
 #   4) Register Customer AAD Subscription ID in Azure Stack billing subscription using 
 #   5) Logout from billing subscription
 #   6) Onboard Customer AAD Subscription ID to Azure Stack  provider AAD subscription
-#   7) Login to  Customer AAD Subscription
+#   7) Add Azure Environment for  Customer AAD Subscription
 #   8) Register Azure Stack Provider AAD Subscription ID to Customer AAD subscription
 #   9) Create 'cloudadmin' account in Customer AAD subscription and assign 'Global Admins' role to this account
 #   10) Create Resource Group
@@ -668,10 +668,11 @@ Import-Module C:\AzureStack\AzureStack-Tools-master\Identity\AzureStack.Identit
 
 #######################################################################################################################################################
 #   ПАРАМЕТРЫ ПОДПИСКИ ДЛЯ СОЗДАНИЯ НОВОГО ПОДПИСЧИКА НИЖЕ
-$TenantName            = $TextBox1.text+"@onmicrosoft.com"          # -> имя тенанта Azure Active Directory (до @onmicrosoft.com), которое было выбрано  при создании заказчика на сайте partner.microsoft.com
+$TenantName            = $TextBox1.text+".onmicrosoft.com"   # -> имя тенанта Azure Active Directory (до @onmicrosoft.com), которое было выбрано  при создании заказчика на сайте partner.microsoft.com
 $SubscriptionName      = $TextBox2.Text     # -> наименование организации заказчика, которое было указано при создании заказчика на сайте partner.microsoft.com
 $CustomerAzureSubscrID = $TextBox04.text #not defined yet
-$CustomerAADAdmin      = "admin$TenantName"
+$AzureTenantCstmrPwd   = ConvertTo-SecureString -String $TextBox05.text -AsPlainText -Force #not defined yet
+$AzureTenantCsmrAdmin      = "admin@$TenantName"
 
 #  0) УСТАНОВКА ПАРАМЕТРОВ КВОТ НА ВЫЧИСЛИТЕЛЬНЫЕ РЕСУРСЫ ТЕНАНТА AZURE STACK
 #----------------------------------------------------------------------
@@ -697,33 +698,37 @@ $WebQuotaName            =   $ComboBox17.SelectedValue
 ###################################################################################################################
 # 1) Login to Azure Stack default provider subscription
 #
-#    Register an Azure Resource Manager environment that targets your Azure Stack instance. 
+# Register an Azure Resource Manager environment that targets your Azure Stack instance. 
+
+$adminARMEndpoint  = "https://adminmanagement.azuremsk.ec.mts.ru"
+$AuthEndpoint      = (Get-AzureRmEnvironment -Name "AzureStackAdmin").ActiveDirectoryAuthority.TrimEnd('/')
+$AADTenantNameAZS  = "iurnvgru.onmicrosoft.com"
+$TenantId          = (invoke-restmethod "$($AuthEndpoint)/$($AADTenantNameAZS)/.well-known/openid-configuration").issuer.TrimEnd('/').Split('/')[-1]
 
 Add-AzureRMEnvironment `
--Name "AzureStackAdmin" `
--ArmEndpoint "https://adminmanagement.azuremsk.ec.mts.ru" `
+                    -Name "AzureStackAdmin" `
+                    -ArmEndpoint $adminARMEndpoint`
                     -AzureKeyVaultDnsSuffix adminvault.azuremsk.ec.mts.ru `
-                    -AzureKeyVaultServiceEndpointResourceId https://adminvault.azuremsk.ec.mts.ru
+                    -AzureKeyVaultServiceEndpointResourceId "https://adminvault.azuremsk.ec.mts.ru"
 # Set your tenant name
-$AuthEndpoint = (Get-AzureRmEnvironment -Name "AzureStackAdmin").ActiveDirectoryAuthority.TrimEnd('/')
-$AADTenantName = "iurnvgru.onmicrosoft.com"
-$TenantId = (invoke-restmethod "$($AuthEndpoint)/$($AADTenantName)/.well-known/openid-configuration").issuer.TrimEnd('/').Split('/')[-1]
  
-$AZSSubscrUserName = $TextBox01.Text                                    
-$secretpass    =  ConvertTo-SecureString -String $TextBox02.Text -AsPlainText -Force
-$AZSCredential =  New-Object System.Management.Automation.PSCredential($AZSSubscrUserName, $secretpass)
-Add-AzureRmAccount -EnvironmentName "AzureStackAdmin" -TenantId $TenantId -Credential $AZSCredential -ErrorAction Stop
+$AZSSubscrUserName =  $TextBox01.Text                                    
+$secretpass        =  ConvertTo-SecureString -String $TextBox02.Text -AsPlainText -Force
+$AZSCredential     =  New-Object System.Management.Automation.PSCredential($AZSSubscrUserName, $secretpass)
+Add-AzureRmAccount -EnvironmentName "AzureStackAdmin" 
+                   -TenantId $TenantId 
+                   -Credential $AZSCredential 
+                   -ErrorAction Stop
 
 # 2) Retrieving billing subscription account password from Azure Stack Key Vault---#################################
-
+#    we can do this only after we have logged in Azure Stack Default Provider Subscription
 $AzureBillSubscrPwd =  (Get-AzureKeyVaultSecret -VaultName 'ProvKeyVault1' -Name stackbilling).SecretValue
 
 # 3) -Add Azure Environment for Billing Subscription-------------------------------#################################
 
-$AuthEndpointAZ  = (Get-AzureRmEnvironment -Name "AzureCloud").ActiveDirectoryAuthority.TrimEnd('/')
-$AADTenantNameAZ = "iurmtspjsc.onmicrosoft.com"
-$AzureTenantId   = (invoke-restmethod "$($AuthEndpoint)/$($AADTenantName)/.well-known/openid-configuration").issuer.TrimEnd('/').Split('/')[-1]
-
+$AuthEndpointBill  = (Get-AzureRmEnvironment -Name "AzureCloud").ActiveDirectoryAuthority.TrimEnd('/')
+$AADTenantNameBill = "iurmtspjsc.onmicrosoft.com"
+$AzureTenantId     = (invoke-restmethod "$($AuthEndpointBill)/$($AADTenantNameBill)/.well-known/openid-configuration").issuer.TrimEnd('/').Split('/')[-1]
 
 $AzureCredential = New-Object System.Management.Automation.PSCredential('stack_billing@iurmtspjsc.onmicrosoft.com', $AzureBillSubscrPwd)
 #Add-AzureRmAccount -EnvironmentName "AzureCloud" -TenantId $AzureTenantId -Credential $AzureCredential
@@ -734,17 +739,54 @@ Login-AzAccount -Environment "AzureCloud" -Credential $AzureCredential
 $AzureContext      = Get-AzureRmContext -ListAvailable | ?{$_.Environment -like "AzureCloud" }
 $AzureStackContext = Get-AzureRmContext -ListAvailable | ?{$_.Environment -match "AzureStackAdmin" }
 
+# 4) -Register Customer AAD Subscription ID in Azure Stack billing subscription using 
 set-azurermcontext -Context $AzureContext # actions below are performing in context 'stack_billing@iurmtspjsc.onmicrosoft.com' 
 
-$BillSubscrID = (Get-AzureRmSubscription).Id
-$BillRG       = "azsReg-azuremsk"
-$RegProv      = "providers/Microsoft.AzureStack/registrations/"
-$AZSRegID     = "AzureStack-ed2f4ae8-4eff-499a-8316-e3dda4bf8a7f"
+    $BillSubscrID = (Get-AzureRmSubscription).Id
+    $BillRG       = "azsReg-azuremsk"
+    $RegProv      = "providers/Microsoft.AzureStack/registrations/"
+    $AZSRegID     = "AzureStack-ed2f4ae8-4eff-499a-8316-e3dda4bf8a7f"
 
-$ApiVersion   = "2017-06-01"
-$RegResourceID = "/subscriptions/$BillSubscrID/resourceGroups/$BillRG/$RegProv/$AZSRegID/customerSubscriptions/$CustomerAzureSubscrID"
-New-AzureRmResource -ResourceId $RegResourceID -ApiVersion $ApiVersion 
+    $ApiVersion   = "2017-06-01"
+    $RegResourceID = "/subscriptions/$BillSubscrID/resourceGroups/$BillRG/$RegProv/$AZSRegID/customerSubscriptions/$CustomerAzureSubscrID"
+    New-AzureRmResource -ResourceId $RegResourceID -ApiVersion $ApiVersion 
 
+# 5) Logout from billing subscription
+     Disconnect-AzureRmAccount -Username stack_billing@iurmtspjsc.onmicrosoft.com
+
+# 6) Onboard Customer AAD Subscription ID to Azure Stack  provider AAD subscription
+    set-azurermcontext -Context $AzureStackContext 
+    $guestDirectoryTenantToBeOnboarded = $TenantName #"<Tenant_Name>.onmicrosoft.com" 
+    $ResourceGroupName = "tenantdirs-rg" 
+    $Location = "azuremsk" 
+    Register-AzSGuestDirectoryTenant -AdminResourceManagerEndpoint $adminARMEndpoint  `
+                                     -DirectoryTenantName $AADTenantNameAZS   `
+                                     -GuestDirectoryTenantName $guestDirectoryTenantToBeOnboarded `
+                                     -Location $Location  `
+                                     -ResourceGroupName $ResourceGroupName 
+# 7) Add Azure Environment for  Customer AAD Subscription ---PROVERIT ETOT BLOCK !!!
+    $AuthEndpointCstmr    = (Get-AzureRmEnvironment -Name "AzureCloud").ActiveDirectoryAuthority.TrimEnd('/')
+    $AADTenantNameCstmr   = $TenantName
+    $AzureTenantId        = (invoke-restmethod "$($AuthEndpointCstmr)/$($AADTenantNameCstmr)/.well-known/openid-configuration").issuer.TrimEnd('/').Split('/')[-1]
+
+    $AzureCredential = New-Object System.Management.Automation.PSCredential($AzureTenantCsmrAdmin, $AzureTenantCstmrPwd)
+    #Add-AzureRmAccount -EnvironmentName "AzureCloud" -TenantId $AzureTenantId -Credential $AzureCredential
+    Login-AzAccount -Environment "AzureCloud" -Credential $AzureCredential
+    #Get-AzureRmContext -ListAvailable | ?{$_.Environment -like "AzureStackadminLnv5" -and $_.Subscription -like "NameOftheSub"}
+    #$env = Get-AzureRmContext -ListAvailable | ?{$_.Environment -like "AzureCloud" }
+    $AzureContext      = Get-AzureRmContext -ListAvailable | ?{$_.Environment -like "AzureCloud" }
+
+# 8) Register Azure Stack Provider AAD Subscription ID to Customer AAD subscription
+set-azurermcontext -Context $AzureContext # actions below are performing in context of admin@%customertenantname%.onmicrosoft.com 
+        
+        install-module azuread
+        import-module azuread
+        $PasswordProfile = New-Object -TypeName Microsoft.Open.AzureAD.Model.PasswordProfile
+
+        $PasswordProfile.Password = "Passw)rd$"
+        Connect-AzureAD -Confirm
+
+        New-AzureADUser -DisplayName "TestUser" -PasswordProfile $PasswordProfile -UserPrincipalName "NewUser@$tenantname" -AccountEnabled $true -MailNickName "TestUser"
 
 #######################################################################################################################
 
