@@ -243,23 +243,23 @@ $Label02.Left = 10
 $Label02.Top = 55;
 $Label02.Width =187;
 $label02.Height =40;
-$Label02.Text = 'Пароль учетной записи Azure Stack';
+$Label02.Text = 'Пароль учетной записи в Azure Stack';
 
 #define Label for Customer Azure Active Directory SubscriptionID
 $Label03 = New-Object “System.Windows.Forms.Label”;
 $Label03.Left = 10
-$Label03.Top = 145;
+$Label03.Top = 155;
 $Label03.Width =187;
 $label03.Height =40;
 $Label03.Text = 'Customer Azure Subscription ID';
 
-#define Label for Customer Azure Active Directory SubscriptionID
+#define Label for Customer Azure Active Directory Admin Password
 $Label04 = New-Object “System.Windows.Forms.Label”;
 $Label04.Left = 10
-$Label04.Top = 185;
+$Label04.Top = 195;
 $Label04.Width =187;
 $label04.Height =40;
-$Label04.Text = "Пароль учетной записи Admin$TenantName";
+$Label04.Text = "Пароль учетной записи Admin в Azure AD заказчика";
 
 
 
@@ -544,17 +544,30 @@ $TextBox03.Top = 90;
 $TextBox03.width = 200;
 $TextBox03.Multiline = $true;
 $TextBox03.height = 60;
-$TextBox03.BackColor = "PowderBlue";
+$TextBox03.BackColor = "lightblue";
 $TextBox03.Visible = $False
 
 #Define TextBox04 for Customer Azure Subscription ID
 $TextBox04 = New-Object "System.Windows.Forms.TextBox";
 $TextBox04.Left = 210;
-$TextBox04.Top = 145;
-$TextBox04.width = 200;
-$TextBox04.Multiline = $true;
-$TextBox04.height = 60;
-$TextBox04.BackColor = "PowderBlue";
+$TextBox04.Top = 155;
+$TextBox04.width = 220;
+#$TextBox04.Multiline = $true;
+#$TextBox04.height = 60;
+$TextBox04.BackColor = "lightblue";
+
+#Define TextBox05 for Customer Azure AD admin password
+$TextBox05 = New-Object "System.Windows.Forms.MaskedTextBox";
+$TextBox05.Left = 210;
+$TextBox05.Top = 195;
+$TextBox05.width = 200;
+$TextBox05.BackColor = "lightblue";
+$Textbox05.PasswordChar = "*";
+
+$Testbox05ToolTip = New-Object "System.Windows.Forms.ToolTip";
+$Testbox05ToolTip.ShowAlways =$true;
+$Testbox05ToolTip.SetToolTip($TextBox05,"Пароль для у/з admin в Azure AD заказчика");
+$Testbox05ToolTip.InitialDelay = 0;
 
 
 #Define TextBox1 for Label1 - 'Имя тенанта Azure Active Directory (до .onmicrosoft.com)';
@@ -992,7 +1005,7 @@ $СhkCredEventHandler = [System.EventHandler]{
     #Write-Host "CredCheckState: $CredCheckState"
     #Write-Host "OutputMsg: $OutputMsg"
     if ($global:CredCheckState -eq "correct"){$TextBox03.ForeColor = "green"}
-    if ($global:CredCheckState -eq "warning"){$TextBox03.ForeColor = "orange"}
+    if ($global:CredCheckState -eq "warning"){$TextBox03.ForeColor = "DarkGoldenRod"}
     if ($global:CredCheckState -eq "fail"){$TextBox03.ForeColor = "red"}
     $TextBox03.Text = $global:OutputMsg
     $TextBox03.ReadOnly =$true
@@ -1034,6 +1047,7 @@ $Form.Controls.Add($TextBox01);
 $Form.Controls.Add($TextBox02);
 $Form.Controls.Add($TextBox03);
 $Form.Controls.Add($TextBox04);
+$Form.Controls.Add($TextBox05);
 $Form.Controls.Add($TextBox1);
 $Form.Controls.Add($TextBox2);
 $Form.Controls.Add($TextBox3);
