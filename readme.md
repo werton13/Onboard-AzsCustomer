@@ -8,3 +8,9 @@ Those procedures are:
     3) Registering Azure Stack with the guest directory
     4) Create new user acccount in Customer Azure AD to make it subscription owner and assign Global Admin role to this account
     5) Create Quotas, Plans, Offer and Azure Stack subscription
+
+In next versions:
+ generate some kind of report
+ add logging
+ add choosing capability for resource providers required
+ add powershell modules check
