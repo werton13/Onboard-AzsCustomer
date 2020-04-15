@@ -10,6 +10,7 @@ Those procedures are:
     5) Create Quotas, Plans, Offer and Azure Stack subscription
 
 In the next versions:
+1) !Found an error in sql and web apps quotes - urgent correct 
  generate some kind of report
  add logging
  add choosing capability for 
