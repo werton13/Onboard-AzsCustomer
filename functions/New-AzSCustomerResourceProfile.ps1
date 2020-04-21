@@ -63,7 +63,7 @@
     $IaaSStorageQuotaID = (Get-AzsStorageQuota -Name "ext-$TenantShortName-sq").id
     $IaaS_Quotas = @()
     $SQL_Quotas  = @()
-    $WEB_Quotas = @()
+    $WEB_Quotas  = @()
     $IaaS_Quotas += $KeyVaultQuotaID
     $IaaS_Quotas += $IaaSComputeQuotaID
     $IaaS_Quotas += $IaaSNetworkQuotaID
