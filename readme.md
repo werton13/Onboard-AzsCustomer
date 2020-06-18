@@ -21,4 +21,5 @@ In the next versions:
  add dependency in between comboboxs (for example: Managed Disks Space --depends from-->VM Quantity) (done) (not all)
  virtual networks gateways and connections default quantity should be eq 0 (done)
  increase max Quantity vCPU, VMs,vNIC (done)
+####
 
