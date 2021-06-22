@@ -1,3 +1,9 @@
+version 2.1
+  rewrited for PowerShell Az module
+  require to install Az Powershell module
+  https://docs.microsoft.com/en-us/azure-stack/operator/powershell-install-az-module?view=azs-2102
+  and download Azure Stack tools for Az module: https://github.com/Azure/AzureStack-Tools/archive/az.zip
+  Test-PSConfig function have to be rewrited - still on AzureRM version
 version 2.0
 
 this script is intended to automate a bundle of procedures, used to onboard a new customer to Multitenant Azure Stack

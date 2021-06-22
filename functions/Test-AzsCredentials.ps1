@@ -11,21 +11,21 @@ function Test-AzsCredentials { #to check Azure Stack credentials
 try {
 
     Add-AzureRMEnvironment `
-                    -Name "AzureStackAdmin" `
-                    -ArmEndpoint "https://adminmanagement.azuremsk.ec.mts.ru" `
-                    -AzureKeyVaultDnsSuffix adminvault.azuremsk.ec.mts.ru `
-                    -AzureKeyVaultServiceEndpointResourceId https://adminvault.azuremsk.ec.mts.ru
-#Set your tenant name
-                     $AuthEndpoint = (Get-AzureRmEnvironment -Name "AzureStackAdmin").ActiveDirectoryAuthority.TrimEnd('/')
-                     $AADTenantName = "iurnvgru.onmicrosoft.com"
-                     $TenantId = (invoke-restmethod "$($AuthEndpoint)/$($AADTenantName)/.well-known/openid-configuration").issuer.TrimEnd('/').Split('/')[-1]
+                    -Name "AzureStackAdmin"ï¿½`
+                    -ArmEndpointï¿½"https://adminmanagement.azuremsk.ec.mts.ru"ï¿½`
+ï¿½                   -AzureKeyVaultDnsSuffixï¿½adminvault.azuremsk.ec.mts.ruï¿½`
+ ï¿½                  -AzureKeyVaultServiceEndpointResourceIdï¿½https://adminvault.azuremsk.ec.mts.ru
+#Setï¿½your tenantï¿½name
+                     $AuthEndpointï¿½=ï¿½(Get-AzureRmEnvironmentï¿½-Name "AzureStackAdmin").ActiveDirectoryAuthority.TrimEnd('/')
+                     $AADTenantNameï¿½=ï¿½"iurnvgru.onmicrosoft.com"
+                     $TenantIdï¿½=ï¿½(invoke-restmethodï¿½"$($AuthEndpoint)/$($AADTenantName)/.well-known/openid-configuration").issuer.TrimEnd('/').Split('/')[-1]
                      
                      #$AZSSubscrUserName = $TextBox01.Text
                      $AZSSubscrUserName = "$AZSUserName@iurnvgru.onmicrosoft.com"                                          
                      #$secretpass    =  ConvertTo-SecureString -String $TextBox02.Text -AsPlainText -Force
                      $secretpass    =  ConvertTo-SecureString -String $AZSPassword -AsPlainText -Force
                      $AZSCredential =  New-Object System.Management.Automation.PSCredential($AZSSubscrUserName, $secretpass)
-                     Add-AzureRmAccount -EnvironmentName "AzureStackAdmin" -TenantId $TenantId -Credential $AZSCredential -ErrorAction Stop
+                     Add-AzureRmAccountï¿½-EnvironmentNameï¿½"AzureStackAdmin"ï¿½-TenantIdï¿½$TenantId -Credential $AZSCredential -ErrorAction Stop
                      #Login-AzAccount -Environment "AzureStackAdmin" -Credential $AZSCredential
     $AzureRMContextSubName = (Get-AzureRmContext -ListAvailable |? {$_.account -match "$AZSSubscrUserName" }).Subscription.Name
     $AzureRMContextAccount = (Get-AzureRmContext -ListAvailable |? {$_.account -match "$AZSSubscrUserName" }).Account.id

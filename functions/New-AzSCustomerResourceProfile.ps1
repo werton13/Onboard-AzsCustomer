@@ -28,10 +28,12 @@
     $TenantShortName = $TenantName.split('.')[0] 
     $CustomerSubscriptionOwner ="cloudadmin@$TenantName"
     $Location = "azuremsk"
-    $ProvSubID = (Get-AzureRmSubscription | Where-Object {$_.Name -eq "Default Provider Subscription"}).id
+    #$ProvSubID = (Get-AzureRmSubscription | Where-Object {$_.Name -eq "Default Provider Subscription"}).id
+    $ProvSubID = (Get-AzSubscription | Where-Object {$_.Name -eq "Default Provider Subscription"}).id
     $RGName = "ext-$TenantShortName-rg"
     #create ResourceGroup
-    New-AzureRmResourceGroup -Location $Location -Name $RGName 
+    #New-AzureRmResourceGroup -Location $Location -Name $RGName 
+    New-AzResourceGroup -Location $Location -Name $RGName 
     #set quotas
     
     New-AzsComputeQuota  -Name "ext-$TenantShortName-cq" `
