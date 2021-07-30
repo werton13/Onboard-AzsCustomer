@@ -233,7 +233,7 @@ $TextBox02.Width = 235
 $TextBox02.Font = $Font4Labels
 $TextBox02.ForeColor = "Navy"
 $TextBox02.Visible = $True
-$TextBox02.Text = "S:\AzureStack-Tools-master"
+$TextBox02.Text = "S:\AzureStack-Tools-az"
 
 ### Experimental feature
 #$button = $browse = $PSConfigForm = 0

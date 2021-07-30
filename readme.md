@@ -17,12 +17,22 @@ Those procedures are:
 
 In the next versions:
 1) !Found an error in sql and web apps quotes - urgent correct (done)
- generate some kind of report (-)
- add logging (-)
- add choosing capability for  resource providers required ( add SQL,WebApp Sections enabler)(-)
- add powershell modules check Модули проверки пререквизитов (done)
- download icons from URL (-)
- add show password button (-)
+ - generate some kind of report (-)
+ - add logging (-)
+ - add choosing capability for  resource providers required ( add SQL,WebApp Sections enabler)(-)
+ - add powershell modules check Модули проверки пререквизитов (need rewrite for Az modules)
+ - download icons from URL (-)
+ - add show password button (-)
+2) 
+ - add CSP tenant creation function
+ - Make main form to not dissapear on push button
+ - add an ability to modify subscription quota
+ - add password generation function
+ - add ability to choose azurestack region
+ - add ability to preview monthly estimate for a tenant
+ - add account password age verification
+  
+
 
  add dependency in between comboboxs (for example: Managed Disks Space --depends from-->VM Quantity) (done) (not all)
  virtual networks gateways and connections default quantity should be eq 0 (done)
