@@ -8,6 +8,7 @@ $Font2 = New-Object System.Drawing.Font("Calibry Light",11,[System.Drawing.FontS
 #$Font4Combo = New-Object System.Drawing.Font("Calibry Light",11,[System.Drawing.FontStyle]::Regular)
 $Font4Button = New-Object System.Drawing.Font("Calibry Light",11,[System.Drawing.FontStyle]::Regular)
 $Font4Button2 = New-Object System.Drawing.Font("Webdings",12,[System.Drawing.FontStyle]::Bold)
+$Font4logo = New-Object System.Drawing.Font("Comic Sans MS",16,[System.Drawing.FontStyle]::Bold)
 
 $form = New-Object Windows.Forms.Form -Property @{
     StartPosition = [Windows.Forms.FormStartPosition]::CenterScreen
@@ -15,14 +16,24 @@ $form = New-Object Windows.Forms.Form -Property @{
     Size          = New-Object Drawing.Size 1300, 950
     Text          = 'Создание подписки для нового заказчика Azure Stack'
     Topmost       = $true
-    #BackColor     = "lightcyan"
+    #BackColor     = "MediumPurple"
     Font          = $Font
     
     #ForeColor     = "navy"
+
+   # $Form.Add_FormClosing({ OnClick_Exit })
     
 }
 
 #region set icons
+$MainIconImage = [system.drawing.image]::FromFile("$PSScriptRoot\icons\Franky3-2.png")
+$LogoPicBox = new-object Windows.Forms.PictureBox
+$LogoPicBox.Width = $MainIconImage.Size.Width
+$LogoPicBox.Height = $MainIconImage.Size.Height
+$LogoPicBox.Top = 20
+$LogoPicBox.left = 1150#210
+$LogoPicBox.Image = $MainIconImage
+
 
 $avSetIconImage = [system.drawing.image]::FromFile("$PSScriptRoot\icons\avSet.jpg")
 $avSetPicBox = new-object Windows.Forms.PictureBox
@@ -278,6 +289,16 @@ $vSeparator4.Height =60;
 $vSeparator4.Width =2;
 $vSeparator4.BorderStyle="Fixed3D";
 
+#create vertical separator line5
+$vSeparator5 = New-Object “System.Windows.Forms.Label”;
+$vSeparator5.Top =  155;
+$vSeparator5.Left = 600#320;
+$vSeparator5.Height = 600;
+$vSeparator5.Width = 2;
+$vSeparator5.BorderStyle="Fixed3D";
+
+
+
 #Define L2bel for Azure Stack IaaS Availability Set Quotes
 $Label3 = New-Object “System.Windows.Forms.Label”;
 $Label3.Left = 650#10;
@@ -412,10 +433,20 @@ $Label19.Text = 'Макс объем ресурсов Web Apps';
 $Label20 = New-Object “System.Windows.Forms.Label”;
 $Label20.Left = 10;
 $Label20.Top = 155#15;
-$Label20.Width =300;
+$Label20.Width =550;
 $Label20.Height =45;
 $Label20.font = $Font4Button;
-$Label20.Text = 'Данные для создания нового заказчика  на Microsoft Partner Center';
+$Label20.Text = 'Введите данные для создания нового заказчика  на Microsoft Partner Center вручную заполнив поля или выполнив импорт данных из CSV файла'
+
+#Define Label for logo
+$Label32 = New-Object “System.Windows.Forms.Label”;
+$Label32.Left = 1000;
+$Label32.Top = 20#15;
+$Label32.Width =140;
+$Label32.Height =65;
+$Label32.font = $Font4logo
+$Label32.Text = 'Привет я Franky v.2'
+
 
 # Create radio buttons
 $RadioButton1 = New-Object System.Windows.Forms.RadioButton
@@ -984,20 +1015,22 @@ $TextBox03.Visible = $False
 
 #Define TextBox04 for Customer Azure Subscription ID
 $TextBox04 = New-Object "System.Windows.Forms.TextBox";
+$TextBox04.readonly =$true
 $TextBox04.Left = 850#210;
 $TextBox04.Top = 155;
 $TextBox04.width = 220;
 $TextBox04.text = "введите Azure Subscription ID"
 #$TextBox04.Multiline = $true;
 #$TextBox04.height = 60;
-$TextBox04.BackColor = "lightblue";
+$TextBox04.BackColor = "lightgray";
 
 #Define TextBox05 for Customer Azure AD admin password
 $TextBox05 = New-Object "System.Windows.Forms.MaskedTextBox";
+$TextBox05.readonly =$true
 $TextBox05.Left = 850#210;
 $TextBox05.Top = 195;
 $TextBox05.width = 220;
-$TextBox05.BackColor = "lightblue";
+$TextBox05.BackColor = "lightgray";
 $Textbox05.PasswordChar = "*";
 
 $Textbox05ToolTip = New-Object "System.Windows.Forms.ToolTip";
@@ -1045,10 +1078,11 @@ $Textbox05ToolTip.InitialDelay = 0;
 
 #Define TextBox06 for Customer Azure AD 'cloudadmin' password -it is an account intended to manage Azure Stack resources from customer side
 $TextBox06 = New-Object "System.Windows.Forms.MaskedTextBox";
+$TextBox06.readonly = $true
 $TextBox06.Left = 850#210;
 $TextBox06.Top = 235;
 $TextBox06.width = 220;
-$TextBox06.BackColor = "lightblue";
+$TextBox06.BackColor = "lightgray";
 $Textbox06.PasswordChar = "*";
 
 $Testbox06ToolTip = New-Object "System.Windows.Forms.ToolTip";
@@ -1096,11 +1130,12 @@ $Testbox06ToolTip.InitialDelay = 0;
 
 #Define TextBox1 for Label1 - 'Имя тенанта Azure Active Directory (до .onmicrosoft.com)';
 $TextBox1 = New-Object “System.Windows.Forms.TextBox”;
+$TextBox1.readonly = $true
 $TextBox1.Left = 850#210;
 $TextBox1.Top = 310;
 $TextBox1.width = 220;
 $Textbox1.text = "короткое имя - например TenanName"
-$TextBox1.BackColor = "lightblue";
+$TextBox1.BackColor = "lightgray";
 
 $Testbox1ToolTip = New-Object "System.Windows.Forms.ToolTip";
 $Testbox1ToolTip.ShowAlways =$true;
@@ -1110,10 +1145,11 @@ $Testbox1ToolTip.InitialDelay = 0;
 
 #Define TextBox2 for Label2 - 'Azure Stack Subscription Name'
 $TextBox2 = New-Object “System.Windows.Forms.TextBox”;
+$TextBox2.readonly = $true
 $TextBox2.Left = 850#210;
 $TextBox2.Top = 355;
 $TextBox2.width = 220;
-$TextBox2.BackColor = "lightblue";
+$TextBox2.BackColor = "lightgray";
 $TextBox2.Text = "например ООО Сетконс"
 
 $Testbox2ToolTip = New-Object "System.Windows.Forms.ToolTip";
@@ -1128,10 +1164,12 @@ $ComboBox1.DroppedDown = $true;
 $ComboBox1.Left = 880#240;
 $ComboBox1.Top = 405;
 $ComboBox1.Width =60;
-$ComboBox1.BackColor ="lightblue";
+$ComboBox1.BackColor ="lightgray";
 $ComboBox1.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter their own vaalues in combobox
-$ComboBox1.Items.AddRange($CValues);
-$ComboBox1.selectedindex = 1 # set default value - index for the values array
+#$ComboBox1.Items.AddRange($CValues);
+#$ComboBox1.Items.AddRange('0');
+#$ComboBox1.selectedindex = 1 # set default value - index for the values array
+#$ComboBox1.selectedindex = 0 # set default value - index for the values array
 
 
 #Define ComboBox for Label4 'Макс кол-во vCPU'
@@ -1141,10 +1179,12 @@ $ComboBox2.DroppedDown = $true;
 $ComboBox2.Left = 880#240;
 $ComboBox2.Top = 480;
 $ComboBox2.Width =60;
-$ComboBox2.BackColor ="lightblue";
+$ComboBox2.BackColor ="lightgray";
 $ComboBox2.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
-$ComboBox2.Items.AddRange($CValues);
-$ComboBox2.selectedindex = 7 # set default value - index for the values array
+#$ComboBox2.Items.AddRange($CValues);
+#$ComboBox2.Items.AddRange('0');
+#$ComboBox2.selectedindex = 7 # set default value - index for the values array
+#$ComboBox2.selectedindex = 0
 
 #Define ComboBox for Label5 'Макс кол-во VM Scale Sets'
 $CValues=@(1..8);
@@ -1153,10 +1193,11 @@ $ComboBox3.DroppedDown = $true;
 $ComboBox3.Left = 880#240;
 $ComboBox3.Top = 455;
 $ComboBox3.Width =60;
-$ComboBox3.BackColor ="lightblue";
+$ComboBox3.BackColor ="lightgray";
 $ComboBox3.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
-$ComboBox3.Items.AddRange($CValues);
-$ComboBox3.selectedindex = 0 # set default value - index for the values array
+#$ComboBox3.Items.AddRange($CValues);
+#$ComboBox3.Items.AddRange('0');
+#$ComboBox3.selectedindex = 0 # set default value - index for the values array
 
 
 #Define ComboBox for Label6 'Макс кол-во Virtual Machines'
@@ -1166,10 +1207,11 @@ $ComboBox4.DroppedDown = $true;
 $ComboBox4.Left = 880#240;
 $ComboBox4.Top = 430;
 $ComboBox4.Width =60;
-$ComboBox4.BackColor ="lightblue";
+$ComboBox4.BackColor ="lightgray";
 $ComboBox4.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
-$ComboBox4.Items.AddRange($CValues);
-$ComboBox4.selectedindex = 3 # set default value - index for the values array
+#$ComboBox4.Items.AddRange($CValues);
+#$ComboBox4.Items.AddRange('0');
+#$ComboBox4.selectedindex = 3 # set default value - index for the values array
 
 $ComboBox4_ValueChanged =
 {
@@ -1185,170 +1227,176 @@ $ComboBox4_ValueChanged =
 }
 $ComboBox4.add_SelectedIndexChanged($ComboBox4_ValueChanged)
 
-$NumbersSequence = @() # from 128 till 20480
-for ($i=128;$i -le 20480;$i+=128){$NumbersSequence+=$i}
+#$NumbersSequence = @() # from 128 till 20480
+#for ($i=128;$i -le 20480;$i+=128){$NumbersSequence+=$i}
 #Define ComboBox for Label7 'Макс объем Managed Disks Standard (Gb)'
-$ComboBox5Values=$NumbersSequence
+#$ComboBox5Values=$NumbersSequence
 #$CValues=@(128,256,384,512,640,768,896,1024,1152,1280,1408,1536,1664,1792,1920,2048,2176,2304,2432,2560,2688,2816,2944,3072,3200,3328,3456,3584,3712,3840,3968,4096,4224,4352,4480,4608,4736,4864,4992,5120,5248,5376,5504,5632,5760,5888,6016,6144,6272,6400,6528,6656,6784,6912,7040,7168,7296,7424,7552,7680,7808,7936,8064,8192,8320,8448,8576,8704,8832,8960,9088,9216,9344,9472,9600,9728,9856,9984,10112,10240,10368,10496,10624,10752,10880,11008,11136,11264,11392,11520,11648,11776,11904,12032,12160,12288,12416,12544,12672,12800,12928,13056,13184,13312,13440,13568,13696,13824,13952,14080,14208,14336,14464,14592,14720,14848,14976,15104,15232,15360,15488,15616,15744,15872,16000,16128,16256,16384,16512,16640,16768,16896,17024,17152,17280,17408,17536,17664,17792,17920,18048,18176,18304,18432,18560,18688,18816,18944,19072,19200,19328,19456,19584,19712,19840,19968,20096,20224,20352,20480);
 $ComboBox5 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox5.DroppedDown = $true;
 $ComboBox5.Left = 880#240;
 $ComboBox5.Top = 520;
 $ComboBox5.Width =60;
-$ComboBox5.BackColor ="lightblue";
+$ComboBox5.BackColor ="lightgray";
 $ComboBox5.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
-$ComboBox5.Items.AddRange($ComboBox5Values);
-$ComboBox5.selectedindex = 3 # set default value - index for the values array
+#$ComboBox5.Items.AddRange('0');
+#$ComboBox5.Items.AddRange($ComboBox5Values);
+#$ComboBox5.selectedindex = 3 # set default value - index for the values array
 
 #Define ComboBox for Label8 'Макс объем Managed Disks Premium (Gb)'
-$ComboBox6Values = $NumbersSequence;
+#$ComboBox6Values = $NumbersSequence;
 $ComboBox6 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox6.DroppedDown = $true;
 $ComboBox6.Left = 880#240;
 $ComboBox6.Top = 548;
 $ComboBox6.Width =60;
-$ComboBox6.BackColor ="lightblue";
+$ComboBox6.BackColor ="lightgray";
 $ComboBox6.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
-$ComboBox6.Items.AddRange($ComboBox6Values);
-$ComboBox6.selectedindex = 3 # set default value - index for the values array
+#$ComboBox6.Items.AddRange('0');
+#$ComboBox6.Items.AddRange($ComboBox6Values);
+#$ComboBox6.selectedindex = 3 # set default value - index for the values array
 
 #Define ComboBox for Label9 'Макс кол-во Virtual Networks'
-$CValues=@(1..10);
+#$CValues=@(1..10);
 $ComboBox7 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox7.DroppedDown = $true;
 $ComboBox7.Left = 1195#555;
 $ComboBox7.Top = 405;
 $ComboBox7.Width =60;
-$ComboBox7.BackColor ="lightblue";
+$ComboBox7.BackColor ="lightgray";
 $ComboBox7.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
-$ComboBox7.Items.AddRange($CValues);
-$ComboBox7.selectedindex = 0 # set default value - index for the values array
+#$ComboBox7.Items.AddRange($CValues);
+#$ComboBox7.Items.AddRange('0');
+#$ComboBox7.selectedindex = 0 # set default value - index for the values array
 
 #Define ComboBox for Label10 'Макс кол-во Network adapters'
-$CValues=@(1..32);
+#$CValues=@(1..32);
 $ComboBox8 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox8.DroppedDown = $true;
 $ComboBox8.Left = 1195#555;
 $ComboBox8.Top = 430;
 $ComboBox8.Width =60;
-$ComboBox8.BackColor ="lightblue";
+$ComboBox8.BackColor ="lightgray";
 $ComboBox8.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
-$ComboBox8.Items.AddRange($CValues);
-$ComboBox8.selectedindex = 3 # set default value - index for the values array
+#$ComboBox8.Items.AddRange($CValues);
+#$ComboBox8.Items.AddRange('0');
+#$ComboBox8.selectedindex = 3 # set default value - index for the values array
 
 #Define ComboBox for Label11 'Макс кол-во Public IP'
-$CValues=@(1..10);
+#$CValues=@(1..10);
 $ComboBox9 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox9.DroppedDown = $true;
 $ComboBox9.Left = 1195#555;
 $ComboBox9.Top = 455;
 $ComboBox9.Width =60;
-$ComboBox9.BackColor ="lightblue";
+$ComboBox9.BackColor ="lightgray";
 $ComboBox9.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
-$ComboBox9.Items.AddRange($CValues);
-$ComboBox9.selectedindex = 0 # set default value - index for the values array
+#$ComboBox9.Items.AddRange($CValues);
+#$ComboBox9.Items.AddRange('0');
+#$ComboBox9.selectedindex = 0 # set default value - index for the values array
 
 #Define ComboBox for Label12 'Макс кол-во Virtual Network Gateways'
-$CValues=@(0,1,2);
+#$CValues=@(0,1,2);
 $ComboBox10 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox10.DroppedDown = $true;
 $ComboBox10.Left = 1195#555;
 $ComboBox10.Top = 480;
 $ComboBox10.Width =60;
-$ComboBox10.BackColor ="lightblue";
+$ComboBox10.BackColor ="lightgray";
 $ComboBox10.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
-$ComboBox10.Items.AddRange($CValues);
-$ComboBox10.selectedindex = 0 # set default value - index for the values array
+#$ComboBox10.Items.AddRange($CValues);
+#$ComboBox10.selectedindex = 0 # set default value - index for the values array
 
 #Define ComboBox for Label13 'Макс кол-во Virtual Network Gateway Connections'
-$CValues=@(0,1,2);
+#$CValues=@(0,1,2);
 $ComboBox11 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox11.DroppedDown = $true;
 $ComboBox11.Left = 1195#555;
 $ComboBox11.Top = 507;
 $ComboBox11.Width =60;
-$ComboBox11.BackColor ="lightblue";
+$ComboBox11.BackColor ="lightgray";
 $ComboBox11.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
-$ComboBox11.Items.AddRange($CValues);
-$ComboBox11.selectedindex = 0 # set default value - index for the values array
+#$ComboBox11.Items.AddRange($CValues);
+#$ComboBox11.selectedindex = 0 # set default value - index for the values array
 
 #Define ComboBox for Label14 'Макс кол-во Virtual Load Balancers'
-$CValues=@(1..8);
+#$CValues=@(1..8);
 $ComboBox12 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox12.DroppedDown = $true;
 $ComboBox12.Left = 1195#555;
 $ComboBox12.Top = 532;
 $ComboBox12.Width =60;
-$ComboBox12.BackColor ="lightblue";
+$ComboBox12.BackColor ="lightgray";
 $ComboBox12.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
-$ComboBox12.Items.AddRange($CValues);
-$ComboBox12.selectedindex = 0 # set default value - index for the values array
+#$ComboBox12.Items.AddRange($CValues);
+#$ComboBox12.selectedindex = 0 # set default value - index for the values array
 
 #Define ComboBox for Label15 'Макс кол-во Network Security Groups'
-$CValues=@(1..32);
+#$CValues=@(1..32);
 $ComboBox13 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox13.DroppedDown = $true;
 $ComboBox13.Left = 1195#555;
 $ComboBox13.Top = 557;
 $ComboBox13.Width =60;
-$ComboBox13.BackColor ="lightblue";
+$ComboBox13.BackColor ="lightgray";
 $ComboBox13.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
-$ComboBox13.Items.AddRange($CValues);
-$ComboBox13.selectedindex = 3 # set default value - index for the values array
+#$ComboBox13.Items.AddRange($CValues);
+#$ComboBox13.selectedindex = 3 # set default value - index for the values array
 
 #Define ComboBox for Label16 'Макс объем Unmanaged Storage (Gb)'
-$CValues=@(128,256,512,1024,2048,3072,4096,5120,6144,7168,8192,9216,10240,16384,20480);
+#$CValues=@(128,256,512,1024,2048,3072,4096,5120,6144,7168,8192,9216,10240,16384,20480);
 $ComboBox14 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox14.DroppedDown = $true;
 $ComboBox14.Left = 1165#525;
 $ComboBox14.Top = 615;
 $ComboBox14.Width =60;
-$ComboBox14.BackColor ="lightblue";
+$ComboBox14.BackColor ="lightgray";
 $ComboBox14.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
-$ComboBox14.Items.AddRange($CValues);
-$ComboBox14.selectedindex = 3 # set default value - index for the values array
+#$ComboBox14.Items.AddRange($CValues);
+#$ComboBox14.selectedindex = 3 # set default value - index for the values array
 
 #Define ComboBox for Label17  'Макс кол-во Storage Accounts';
-$CValues=@(1..20);
+#$CValues=@(1..20);
 $ComboBox15 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox15.DroppedDown = $true;
 $ComboBox15.Left = 1165#525;
 $ComboBox15.Top = 645;
 $ComboBox15.Width =60;
-$ComboBox15.BackColor ="lightblue";
+$ComboBox15.BackColor ="lightgray";
 $ComboBox15.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
-$ComboBox15.Items.AddRange($CValues);
-$ComboBox15.selectedindex = 1 # set default value - index for the values array
+#$ComboBox15.Items.AddRange($CValues);
+#$ComboBox15.selectedindex = 1 # set default value - index for the values array
 
 #Define ComboBox for Label18 'Макс объем ресурсов SQL as Service'
-$CValues=@("10GB 5DB","10GB 10DBs","100GB 10DBs");
+#$CValues=@("10GB 5DB","10GB 10DBs","100GB 10DBs");
 $ComboBox16 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox16.DroppedDown = $true;
 $ComboBox16.Left = 1135#495;
 $ComboBox16.Top = 696;
 $ComboBox16.Width =90;
-$ComboBox16.BackColor ="lightblue";
+$ComboBox16.BackColor ="lightgray";
 $ComboBox16.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
-$ComboBox16.Items.AddRange($CValues);
-$ComboBox16.selectedindex = 0 # set default value - index for the values array
+#$ComboBox16.Items.AddRange($CValues);
+#$ComboBox16.selectedindex = 0 # set default value - index for the values array
 
 #Define ComboBox for Label19 'Макс объем ресурсов Web Apps'
-$CValues=@("1 App SP","3 App SP","Evaluation");
+#$CValues=@("1 App SP","3 App SP","Evaluation");
 $ComboBox17 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox17.DroppedDown = $true;
 $ComboBox17.Left = 1135#495;
 $ComboBox17.Top = 765;
 $ComboBox17.Width =90;
-$ComboBox17.BackColor ="lightblue";
+$ComboBox17.BackColor ="lightgray";
 $ComboBox17.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
-$ComboBox17.Items.AddRange($CValues);
-$ComboBox17.selectedindex = 2 # set default value - index for the values array
+#$ComboBox17.Items.AddRange($CValues);
+#$ComboBox17.selectedindex = 2 # set default value - index for the values array
 
 
 
 
 #Define OK Button
 $CreateButton = New-Object “System.Windows.Forms.Button”;
+$CreateButton.visible = $false
 $CreateButton.Left = 1060#420;
 $CreateButton.Top = 850;
 $CreateButton.Width = 160;
@@ -1538,6 +1586,24 @@ $AuthenticateEventHandler = [System.EventHandler]{
     $RadioButton2.visible = $true
     $TextBox08.ReadOnly =$false
     $TextBox08.BackColor = "lightblue";
+    
+
+    $TextBox1.ReadOnly =$false
+    $TextBox1.BackColor = "lightblue";
+
+    $TextBox2.ReadOnly =$false
+    $TextBox2.BackColor = "lightblue";
+
+    $TextBox04.ReadOnly =$false
+    $TextBox04.BackColor = "lightblue";
+
+    $TextBox05.ReadOnly =$false
+    $TextBox05.BackColor = "lightblue";
+
+    $TextBox06.ReadOnly =$false
+    $TextBox06.BackColor = "lightblue";
+
+
 
     $TextBox09.ReadOnly =$false
     $TextBox09.BackColor = "lightblue";
@@ -1571,6 +1637,114 @@ $AuthenticateEventHandler = [System.EventHandler]{
     
 
     $CheckDomainButton.visible = $true
+    
+    #Activating Comboboxes
+    $CB1Values=@("1","2","3","4");
+    $ComboBox1.Items.AddRange($CB1Values)
+    $ComboBox1.selectedindex = 1 
+    $ComboBox1.BackColor ="lightblue";
+    
+    ##
+    $CB2Values=@(1..64);
+    $ComboBox2.Items.AddRange($CB2Values);
+    $ComboBox2.selectedindex = 7
+    $ComboBox3.BackColor ="lightblue";
+    
+    ##
+    $CB3Values=@(1..8);
+    $ComboBox3.Items.AddRange($CB3Values);
+    $ComboBox3.selectedindex = 0
+    $ComboBox3.BackColor ="lightblue";
+    
+    ##
+    $CB4Values=@(1..32);
+    $ComboBox4.Items.AddRange($CB4Values);
+    $ComboBox4.BackColor ="lightblue";
+    $ComboBox4.selectedindex = 3
+    
+    ##
+    $NumbersSequence = @() # from 128 till 20480
+    for ($i=128;$i -le 20480;$i+=128){$NumbersSequence+=$i}
+    $CB5Values=$NumbersSequence
+    $ComboBox5.Items.AddRange($CB5Values);
+    $ComboBox5.BackColor ="lightblue";
+    $ComboBox5.selectedindex = 3
+    
+    ##
+    $CB6Values = $NumbersSequence;
+    $ComboBox6.Items.AddRange($CB6Values);
+    $ComboBox6.BackColor ="lightblue";
+    $ComboBox6.selectedindex = 3
+    
+    #
+    $CB7Values=@(1..10);
+    $ComboBox7.Items.AddRange($CB7Values);
+    $ComboBox7.selectedindex = 0
+    $ComboBox7.BackColor ="lightblue";
+    
+    #
+    $CB8Values=@(1..32);
+    $ComboBox8.Items.AddRange($CB8Values);
+    $ComboBox8.selectedindex = 3 
+    $ComboBox8.BackColor ="lightblue";
+    
+    #
+    $CB9Values=@(1..10);
+    $ComboBox9.Items.AddRange($CB9Values);
+    $ComboBox9.selectedindex = 0
+    $ComboBox9.BackColor ="lightblue";
+    
+    ##
+    $CB10Values=@(0,1,2);
+    $ComboBox10.Items.AddRange($CB10Values);
+    $ComboBox10.selectedindex = 0
+    $ComboBox10.BackColor ="lightblue";
+    
+    ##
+    $CB11Values=@(1..8);
+    $ComboBox11.Items.AddRange($CB11Values);
+    $ComboBox11.selectedindex = 0 
+    $ComboBox11.BackColor ="lightblue";
+    
+    ##
+    $CB12Values=@(1..8);
+    $ComboBox12.Items.AddRange($CB12Values);
+    $ComboBox12.selectedindex = 0
+    $ComboBox12.BackColor ="lightblue";
+    
+    ##
+    $CB13Values=@(1..32);
+    $ComboBox13.Items.AddRange($CB13Values);
+    $ComboBox13.selectedindex = 3 
+    $ComboBox13.BackColor ="lightblue";
+    
+    #
+    ##
+    $CB14Values=@(128,256,512,1024,2048,3072,4096,5120,6144,7168,8192,9216,10240,16384,20480);
+    $ComboBox14.Items.AddRange($CB14Values);
+    $ComboBox14.selectedindex = 3
+    $ComboBox14.BackColor ="lightblue";
+    
+    ##
+    $CB15Values=@(1..20);
+    $ComboBox15.Items.AddRange($CB15Values);
+    $ComboBox15.selectedindex = 1 
+    $ComboBox15.BackColor ="lightblue";
+    
+    ##
+    $CB16Values=@("10GB 5DB","10GB 10DBs","100GB 10DBs");
+    $ComboBox16.Items.AddRange($CB16Values);
+    $ComboBox16.selectedindex = 0
+    $ComboBox16.BackColor ="lightblue";
+    
+    ##
+    $CB17Values=@("1 App SP","3 App SP","Evaluation");
+    $ComboBox17.Items.AddRange($CB17Values);
+    $ComboBox17.selectedindex = 2 
+    $ComboBox17.BackColor ="lightblue";
+    
+    #
+    $CreateButton.visible = $true
     
     
 
@@ -1646,6 +1820,7 @@ $Form.Controls.Add($Label28);
 $Form.Controls.Add($Label29);
 $Form.Controls.Add($Label30);
 $Form.Controls.Add($Label31);
+$Form.Controls.Add($Label32);
 $Form.Controls.Add($TextBox01);
 $Form.Controls.Add($TextBox02);
 $Form.Controls.Add($TextBox0002);
@@ -1695,6 +1870,7 @@ $form.Controls.Add($vSeparator1);
 $form.Controls.Add($vSeparator2);
 $form.Controls.Add($vSeparator3);
 $form.Controls.Add($vSeparator4);
+$form.Controls.Add($vSeparator5);
 $form.Controls.Add($pictureBox1);
 $form.Controls.Add($avSetPicBox)
 $form.Controls.Add($VMPicBox1)
@@ -1709,6 +1885,7 @@ $form.Controls.Add($vGWPicBox);
 $form.Controls.Add($vGWConPicBox);
 $form.Controls.Add($vLBPicBox);
 $form.Controls.Add($NSGPicBox);
+$form.Controls.Add($LogoPicBox);
 $form.Controls.Add($RadioButton1);
 $form.Controls.Add($RadioButton2);
 $form.Controls.Add($BrowsCSVButton);
