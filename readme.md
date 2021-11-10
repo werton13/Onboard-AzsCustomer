@@ -24,6 +24,7 @@ In the next versions:
  - download icons from URL (-)
  - add show password button (-)
 2) 
+   New features:
  - add CSP tenant creation function
  - Make main form to not dissapear on push button
  - add an ability to modify subscription quota
@@ -31,6 +32,15 @@ In the next versions:
  - add ability to choose azurestack region
  - add ability to preview monthly estimate for a tenant
  - add account password age verification
+ - add ALL accounts age verification
+ - Write operation details as JSON & pack it to zip file
+ - add new subscription for a new user of existing tenant
+ - add autosave for thr default Azure Stack tools path in local folder, keeping in ccomputername - path pair, checking
+  Fixes:
+  Get new CSP customer Azure SubscriptionID - have to be fixed
+
+
+
   
 
 
