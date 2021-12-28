@@ -60,7 +60,8 @@
                             -VirtualMachineCount $IaaS_CQ_VMMachineCount `
                             -StandardManagedDiskAndSnapshotSize $IaaS_CQ_STDStorageSize `
                             -PremiumManagedDiskAndSnapshotSize $IaaS_CQ_PREMStorageSize `
-                            -location $Location
+                            -location $Location `
+                            -verbose
         New-AzsNetworkQuota -Name "ext-$TenantShortName-nq" `
                             -MaxVnetsPerSubscription $IaaS_NQ_VNetCount `
                             -MaxNicsPerSubscription $IaaS_NQ_NicsCount `

@@ -290,8 +290,8 @@ set-azcontext -Context $AzureContext
 
 #region 8) Create Resource Group Quotas Plans and Offers
 #set-azurermcontext -Context $AzureStackAdminContext
-set-azcontext -Context $AzureStackAdminContext[0]
-
+#set-azcontext -Context $AzureStackAdminContext[0]
+set-azcontext -Context $AzureStackAdminContext
 write-host "CapabilityProfile before profile creation: "
 #$global:CapabilityProfile.GetType()
 #$global:CapabilityProfile.Count
