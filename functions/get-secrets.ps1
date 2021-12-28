@@ -92,7 +92,7 @@ try {
 
 
                                                                     # If ActualKVRTokenSecret is older then 5 days -create a new KeyVaultSecret version and put new RefreshToken in to it 
-                                                                    if($ActualKVRTokenSecretUpdated -lt $(get-date).AddDays(1)){
+                                                                    if($ActualKVRTokenSecretUpdated -lt $(get-date).AddDays(-5)){
 
                                                                         # Take a new RefreshToken from a Token and convert it to secure string to put it as new KeyVault Secret Value
                                                                         $NewRefreshToken = ConvertTo-SecureString -String  $token.RefreshToken -AsPlainText -Force

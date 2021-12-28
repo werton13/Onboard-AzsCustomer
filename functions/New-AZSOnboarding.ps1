@@ -138,23 +138,16 @@ $global:CapabilityProfile | add-member -membertype NoteProperty -name AKS -value
         $AZSRegID     = "MskNorth-e72acbb1-a45e-431e-995b-9d0c25b4a9f4"
 
         $tenantARMEndpoint = "https://management.msknorth.azs.cloud.mts.ru" 
-        $CapabilityProfile = @{
-            "IaaS" =     "Disabled";
-            "KeyVault" = "Disabled";
-            "WebApps"  = "Disabled";
-            "SQL"      = "Disabled";
-            "EvensHub" = "Disabled";
-            "IoT"      = "Disabled";
-            "AKS"      = "Disabled"
-            }
+  
         #setting cloud capabilities:
-        $CapabilityProfile.IaaS      = "Enabled"
-        $CapabilityProfile.KeyVault  = "Enabled"
-        $CapabilityProfile.WebApps   = "Disabled"
-        $CapabilityProfile.SQL       = "Disabled"
-        $CapabilityProfile.EventsHub = "Disabled"
-        $CapabilityProfile.IoT       = "Disabled"
-        $CapabilityProfile.AKS       = "Disabled"
+        
+        $global:CapabilityProfile.IaaS      = "Enabled"
+        $global:CapabilityProfile.KeyVault  = "Enabled"
+        $global:CapabilityProfile.WebApps   = "Disabled"
+        $global:CapabilityProfile.SQL       = "Disabled"
+        $global:CapabilityProfile.EventsHub = "Disabled"
+        $global:CapabilityProfile.IoT       = "Disabled"
+        $global:CapabilityProfile.AKS       = "Disabled"
     }
     write-host "new-azsonboarding - outside if"
     write-host "CapabilityProfile: $global:CapabilityProfile"
