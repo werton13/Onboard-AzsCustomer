@@ -98,7 +98,7 @@ $global:CapabilityProfile | add-member -membertype NoteProperty -name AKS -value
         $BillUserName   = 'stack_billing@iurmtspjsc.onmicrosoft.com'
         $ResourceGroupName = "tenantdirs-rg" #region 4) Onboard Customer AAD Subscription ID to Azure Stack  provider AAD subscription
         $Location = "azuremsk"               #region 4)
-   
+        $DefProvSubscriptionID = "e09253ef-400a-4d06-bab5-4c494353c362"
         $BillRG       = "azsReg-azuremsk"
         $RegProv      = "providers/Microsoft.AzureStack/registrations"
         $AZSRegID     = "AzureStack-ed2f4ae8-4eff-499a-8316-e3dda4bf8a7f"
@@ -121,23 +121,23 @@ $global:CapabilityProfile | add-member -membertype NoteProperty -name AKS -value
 
     if ($AZSRegionName -eq "msknorth"){
 
-        $adminARMEndpoint   = "https://adminmanagement.msknorth.az.cloud.mts.ru"
+        $adminARMEndpoint   = "https://adminmanagement.msknorth.azs.cloud.mts.ru"
         #$AuthEndpoint      = (Get-AzureRmEnvironment -Name "AzureStackAdmin").ActiveDirectoryAuthority.TrimEnd('/')
         $AuthEndpoint       = (Get-AzEnvironment -Name "AzureStackAdmin").ActiveDirectoryAuthority.TrimEnd('/')
         $AADTenantNameAZS   = "iurnvgru.onmicrosoft.com"
-        $KeyVaultEndpoint   = "https://adminvault.msknorth.az.cloud.mts.ru"
-        $KeyVaultDnsSuffix  = 'adminvault.msknorth.az.cloud.mts.ru'
+        $KeyVaultEndpoint   = "https://adminvault.msknorth.azs.cloud.mts.ru"
+        $KeyVaultDnsSuffix  = 'adminvault.msknorth.azs.cloud.mts.ru'
         $VaultName = 'ProvKeyVault1'
         $KeyVaultBillPWDSecretName = 'msknorthstackbilling'
         $BillUserName  = 'azsmsk_stamp03_billing@iurmtspjsc.onmicrosoft.com'
         $ResourceGroupName = "tenantdirs-rg" #region 4) Onboard Customer AAD Subscription ID to Azure Stack  provider AAD subscription
         $Location = "msknorth"               #region 4)
-   
+        $DefProvSubscriptionID = "40a42cfd-11a1-45f8-a0d7-4ed1b87855a8"
         $BillRG       = "azsReg-MskNorth"
         $RegProv      = "providers/Microsoft.AzureStack/registrations"
         $AZSRegID     = "MskNorth-e72acbb1-a45e-431e-995b-9d0c25b4a9f4"
 
-        $tenantARMEndpoint = "https://management.msknorth.az.cloud.mts.ru" 
+        $tenantARMEndpoint = "https://management.msknorth.azs.cloud.mts.ru" 
         $CapabilityProfile = @{
             "IaaS" =     "Disabled";
             "KeyVault" = "Disabled";
@@ -156,7 +156,7 @@ $global:CapabilityProfile | add-member -membertype NoteProperty -name AKS -value
         $CapabilityProfile.IoT       = "Disabled"
         $CapabilityProfile.AKS       = "Disabled"
     }
-    write-host "outside if"
+    write-host "new-azsonboarding - outside if"
     write-host "CapabilityProfile: $global:CapabilityProfile"
     write-host "AZSRegID: $AZSRegID "
     $global:CapabilityProfile
@@ -214,7 +214,7 @@ $global:CapabilityProfile | add-member -membertype NoteProperty -name AKS -value
     #$AzureContext      = Get-AzureRmContext -ListAvailable | ?{$_.Environment -like "AzureCloud" }
     #$AzureStackAdminContext = Get-AzureRmContext -ListAvailable | ?{$_.Environment -match "AzureStackAdmin" }
     $AzureContext = Get-AzContext -ListAvailable | ?{$_.Environment -like "AzureCloud" }
-    $AzureStackAdminContext = Get-AzContext -ListAvailable | ?{$_.Environment -like "AzureStackAdmin" }
+    $AzureStackAdminContext = Get-AzContext -ListAvailable | ?{($_.Environment -like "AzureStackAdmin") -and ($_.name -match "$DefProvSubscriptionID")}
 #endregion
 
 #region 3) -Register Customer AAD Subscription ID in Azure Stack billing subscription using 
@@ -239,6 +239,7 @@ Set-AzContext -Context $AzureContext[0]
 #region 4) Onboard Customer AAD Subscription ID to Azure Stack  provider AAD subscription
 
 #set-azurermcontext -Context $AzureStackAdminContext 
+write-host "set-azurermcontext -Context AzureStackAdminContext: $($AzureStackAdminContext[0])"
  Set-AzContext -Context $AzureStackAdminContext[0]
     $guestDirectoryTenantToBeOnboarded = $TenantName #"<Tenant_Name>.onmicrosoft.com" 
     #$ResourceGroupName = "tenantdirs-rg" 

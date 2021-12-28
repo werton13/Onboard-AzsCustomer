@@ -1,3 +1,27 @@
+version 2.3
+   New features:
+ - add CSP tenant creation function -----------------------(+)
+ - Make main form to not dissapear on push button----------(+)
+ - add an ability to modify subscription quota-------------(-)
+ - add password generation function------------------------(+)
+ - add ability to choose azurestack region-----------------(+)
+ - add ability to preview monthly estimate for a tenant----(-)
+ - add account password age verification-------------------(+)
+ - add ALL accounts age verification ----------------------(-)
+ - Write operation details as JSON & pack it to zip file---(-)
+ - add new subscription for a new user of existing tenant--(-)
+ - add autosave for thr default Azure Stack tools path in local folder, keeping in ccomputername - path pair, checking
+  Fixes:
+- Get new CSP customer Azure SubscriptionID insteed of Azure Plan subscription ID-----(+)
+- Add RefreshToken secret age check and update for values older then 5 days-----------(+)
+- Add main form close event correct handling - main script exit without errors--------(+)
+
+FIXES:
+ - New-PartnerAccessToken - when new PartnerAccessToken created by age condition - KeyVault secret updated incorrectly^
+   the access token created in a session is correct, but related refreshtoken writed in some incorrect form - neet to investigate -fixed
+ISSUES:
+Any incorrect login try  - unlock ASH subscription creation GUI
+
 version 2.1
   rewrited for PowerShell Az module
   require to install Az Powershell module
@@ -23,27 +47,8 @@ In the next versions:
  - add powershell modules check Модули проверки пререквизитов (need rewrite for Az modules)---(-)
  - download icons from URL ------------------------------------------------------------------ (+)
  - add show password button------------------------------------------------------------------ (+)
-2) 
-   New features:
- - add CSP tenant creation function -----------------------(+)
- - Make main form to not dissapear on push button----------(+)
- - add an ability to modify subscription quota-------------(-)
- - add password generation function------------------------(+)
- - add ability to choose azurestack region-----------------(-)
- - add ability to preview monthly estimate for a tenant----(-)
- - add account password age verification-------------------(+)
- - add ALL accounts age verification ----------------------(-)
- - Write operation details as JSON & pack it to zip file---(-)
- - add new subscription for a new user of existing tenant--(-)
- - add autosave for thr default Azure Stack tools path in local folder, keeping in ccomputername - path pair, checking
-  Fixes:
-- Get new CSP customer Azure SubscriptionID insteed of Azure Plan subscription ID-----(+)
-- Add RefreshToken secret age check and update for values older then 5 days-----------(+)
-- Add main form close event correct handling - main script exit without errors--------(+)
+ 
 
- ISSUES:
- - New-PartnerAccessToken - when new PartnerAccessToken created by age condition - KeyVault secret updated incorrectly^
-   the access token created in a session is correct, but related refreshtoken writed in some incorrect form - neet to investigate
 
 
   
