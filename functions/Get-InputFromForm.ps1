@@ -10,10 +10,11 @@ $Font4Button = New-Object System.Drawing.Font("Calibry Light",11,[System.Drawing
 $Font4Button2 = New-Object System.Drawing.Font("Webdings",12,[System.Drawing.FontStyle]::Bold)
 $Font4logo = New-Object System.Drawing.Font("Comic Sans MS",16,[System.Drawing.FontStyle]::Bold)
 
+
 $form = New-Object Windows.Forms.Form -Property @{
     StartPosition = [Windows.Forms.FormStartPosition]::CenterScreen
     #Size          = New-Object Drawing.Size 655, 950
-    Size          = New-Object Drawing.Size 1300, 950
+    Size          = New-Object Drawing.Size 1350, 950
     Text          = 'Создание подписки для нового заказчика Azure Stack'
     Topmost       = $true
     #BackColor     = "MediumPurple"
@@ -204,9 +205,17 @@ $Label04.Text = "Пароль существующей у/з 'Admin' в Azure AD
 $Label05 = New-Object “System.Windows.Forms.Label”;
 $Label05.Left = 650#10
 $Label05.Top = 235;
-$Label05.Width =187;
+$Label05.Width =125;
 $label05.Height =40;
 $Label05.Text = "Пароль для создания у/з 'cloudadmin' в Azure AD заказчика";
+
+#define Label for Azure Stack Region Name -Combobox0
+$Label06 = New-Object “System.Windows.Forms.Label”;
+$Label06.Left = 650#10
+$Label06.Top = 115;
+$Label06.Width =187;
+$label06.Height =40;
+$Label06.Text = 'Azure Stack Region:'
 
 
 #Define Label for Azure Active Directory Tenant Name
@@ -447,6 +456,25 @@ $Label32.Height =65;
 $Label32.font = $Font4logo
 $Label32.Text = 'Привет я Franky v.2'
 
+#Define Label for region warning 
+$Label33 = New-Object “System.Windows.Forms.Label”;
+$Label33.Left = 1130;
+$Label33.Top = 696#15;
+$Label33.Width = 180;
+$Label33.Height = 40;
+$Label33.ForeColor = 'Red'
+$Label33.Text = 'Опция не поддерживается в регионе'
+$label33.Visible = $false
+
+#Define Label for region warning 
+$Label34 = New-Object “System.Windows.Forms.Label”;
+$Label34.Left = 1130;
+$Label34.Top = 765#15;
+$Label34.Width = 180;
+$Label34.Height =40;
+$Label34.ForeColor = 'Red'
+$Label34.Text = 'Опция не поддерживается в регионе'
+$label34.Visible = $false
 
 # Create radio buttons
 $RadioButton1 = New-Object System.Windows.Forms.RadioButton
@@ -849,13 +877,20 @@ $CreateNewCustomerButtonEventHandler = [System.EventHandler]{
   `r`nAzureCatalogID: $script:AzureCatalogIDDBG
   `r`nNewShoppingCard: $script:NewShoppingCardDBG
   `r`nNewShoppingCardCheckOut: $script:NewShoppingCardCheckOutDBG
-  `r`nAzureSubscriptionID: $script:AzureSubscriptionIDDBG
+  `r`nAzurePlanSubscriptionID: $script:AzurePlanSubscriptionIDDBG
+  `r`nAzureSubscriptionID: $script:AzureSubscriptionIDDBG 
   
   "
-  $NewCSPCustomerProperties | Out-File 'S:\PS-Scripts\CSPScripts\NewCSPCustomer-result.txt'
+  $NewCSPCustomerProperties | Out-File "S:\PS-Scripts\CSPScripts\$($TextBox08.text.replace('"',''))CSPAccount-Details.txt"
   $TextBox1.text  = $Script:NewCSPCustomerProperties.CustomerDomain #'Имя тенанта (до .onmicrosoft.com)'
   # $Script:NewCSPCustomerProperties.CustomerDomainAdminName
-  $TextBox2.Text  = "$($customers[0].CtmrCompanyName)" #Azure Stack Subsciption name = Company Name
+  if($customers){
+      
+    $TextBox2.Text  = "$($customers[0].CtmrCompanyName)" #Azure Stack Subsciption name = Company Name
+    }
+  else {$TextBox2.Text = $Textbox08.text }
+  
+  
   $TextBox04.text = $Script:NewCSPCustomerProperties.CustomerAzureSubscriptionID #Customer Azure Subscription ID
   $TextBox05.text = $Script:NewCSPCustomerProperties.CustomerDomainAdminPWD #Customer Azure AD admin password
   $TextBox06.text = $Script:NewCSPCustomerProperties.CustomerDomainCloudAdminPWD #Customer Azure Subscription ID
@@ -1157,6 +1192,43 @@ $Testbox2ToolTip.ShowAlways =$true;
 $Testbox2ToolTip.SetToolTip($TextBox2,"Наименование организации заказчика, которое было указано при создании заказчика на сайте partner.microsoft.com");
 $Testbox2ToolTip.InitialDelay = 0;
 
+#Define ComboBox for Label3 'Azure Stack Region Name'
+#$CValues=@("AzureMSK","MSKNorth");
+$ComboBox0 = New-Object "System.Windows.Forms.ComboBox";
+$ComboBox0.DroppedDown = $true;
+$ComboBox0.Left = 850#240;
+$ComboBox0.Top  = 115;
+$ComboBox0.Width = 225;
+$ComboBox0.BackColor ="lightgray";
+$ComboBox0.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter their own vaalues in combobox
+#$ComboBox0.Items.AddRange($CValues);
+#$ComboBox1.Items.AddRange('0');
+#$ComboBox1.selectedindex = 1 # set default value - index for the values array
+#$ComboBox1.selectedindex = 0 # set default value - index for the values array
+
+# Hiding options  - not supported in the choosen Azure Stack region 
+$ComboBox0_ValueChanged =
+{
+    if($combobox0.SelectedItem -match "MSKNorth"){
+    
+    $ComboBox16.hide() #SQL
+    $ComboBox17.hide() #WebApps
+    $label33.Visible = $true
+    $label34.Visible = $true
+
+    }
+    if($combobox0.SelectedItem -match "AzureMSK"){
+    
+    $ComboBox16.show() #SQL
+    $ComboBox17.show() #WebApps
+    $label33.Visible = $false
+    $label34.Visible = $false
+
+    }
+    
+}
+$ComboBox0.add_SelectedIndexChanged($ComboBox0_ValueChanged)
+
 #Define ComboBox for Label3 'Макс кол-во Availability set'
 $CValues=@("1","2","3","4");
 $ComboBox1 = New-Object "System.Windows.Forms.ComboBox";
@@ -1387,7 +1459,8 @@ $ComboBox17.Left = 1135#495;
 $ComboBox17.Top = 765;
 $ComboBox17.Width =90;
 $ComboBox17.BackColor ="lightgray";
-$ComboBox17.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own vaalues in combobox
+$ComboBox17.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter theirr own values in combobox
+
 #$ComboBox17.Items.AddRange($CValues);
 #$ComboBox17.selectedindex = 2 # set default value - index for the values array
 
@@ -1416,6 +1489,8 @@ $CreateButton.BackColor = [System.Drawing.Color]::aliceblue 
 
 ############# This is when you have to close the Form after getting values
 $CreateButtonEventHandler = [System.EventHandler]{
+
+write-host "CreateSubscription Button Pushed" -ForegroundColor Cyan
                                         
                                         #$TextBox01.Text;
                                         #$TextBox1.Text;
@@ -1449,97 +1524,179 @@ $CreateButtonEventHandler = [System.EventHandler]{
 #######################################################################################################################################################
 
 
-$AZSAdminSubscrUserName  =  $TextBox01.Text       
-$AZSAdminSubscrPwd       =  ConvertTo-SecureString -String $TextBox02.Text -AsPlainText -Force
-$CustomerAzureSubscrID = $TextBox04.text #
-$TenantName            = $TextBox1.text+".onmicrosoft.com"   # -> имя тенанта Azure Active Directory (до @onmicrosoft.com), которое было выбрано  при создании заказчика на сайте partner.microsoft.com
-$SubscriptionName      = $TextBox2.Text     # -> наименование организации заказчика, которое было указано при создании заказчика на сайте partner.microsoft.com
-$AzureTenantCstmrCloudAdminPwd   =  $TextBox06.text
-$AzureTenantCstmrAdmin      = "admin@$TenantName"
-$AzureTenantCstmrAdminPwd   = ConvertTo-SecureString -String $TextBox05.text -AsPlainText -Force
-$IaaS_CQ_AvailSetCount   =   [int]$ComboBox1.SelectedItem # 
-$IaaS_CQ_CoresCount      =   [int]$ComboBox2.SelectedItem #
-$IaaS_CQ_VMScaleSetCount =   [int]$ComboBox3.SelectedItem  #
-$IaaS_CQ_VMMachineCount  =   [int]$ComboBox4.SelectedItem  #
-$IaaS_CQ_STDStorageSize  =   [int]$ComboBox5.SelectedItem  #
-$IaaS_CQ_PREMStorageSize =   [int]$ComboBox6.SelectedItem  #
-$IaaS_NQ_VNetCount       =   [int]$ComboBox7.SelectedItem  #
-$IaaS_NQ_NicsCount       =   [int]$ComboBox8.SelectedItem  #
-$IaaS_NQ_PIPCount        =   [int]$ComboBox9.SelectedItem  #
-$IaaS_NQ_VNGCount        =   [int]$ComboBox10.SelectedItem #
-$IaaS_NQ_VNGConCount     =   [int]$ComboBox11.SelectedItem #
-$IaaS_NQ_LBCount         =   [int]$ComboBox12.SelectedItem     #
-$IaaS_NQ_SGCount         =   [int]$ComboBox13.SelectedItem      #
-$IaaS_SQ_Capacity        =   [int]$ComboBox14.SelectedItem   #
-$IaaS_SQ_SACount         =   [int]$ComboBox15.SelectedItem     #
-$SQLQuotaName            =   ($ComboBox16.SelectedItem).ToString().Replace(" ","")
+$AZSAdminSubscrUserName = $TextBox01.Text
+$AZSAdminSubscrPwd = $TextBox02.Text
+#$CustomerAzureSubscrID = $TextBox04.text #
+#$TenantName = $TextBox1.text+".onmicrosoft.com" # -> имя тенанта Azure Active Directory (до @onmicrosoft.com), которое было выбрано  при создании заказчика на сайте partner.microsoft.com
+#$SubscriptionName  = $TextBox2.Text # -> наименование организации заказчика, которое было указано при создании заказчика на сайте partner.microsoft.com
+#$AzureTenantCstmrCloudAdminPwd = $TextBox06.text
+#$AzureTenantCstmrAdmin  = "admin@$TenantName"
+#$AzureTenantCstmrAdminPwd = $TextBox05.text
+
+if($combobox0.SelectedItem -match "MSKNorth"){$AZSRegionName = "msknorth"}
+if($combobox0.SelectedItem -match "AzureMSK"){$AZSRegionName = "azuremsk"}
+
+
+if ($TextBox04.text -notmatch "введите")  {$CustomerAzureSubscrID = $TextBox04.text; $TextBox04.BackColor = "LightBlue" }       else {$CustomerAzureSubscrID = "NotSet"; $TextBox04.BackColor = "LightCoral"}
+if ($TextBox1.text -notmatch "например")  {$TenantName = $TextBox1.text+".onmicrosoft.com" ;$TextBox1.BackColor = "LightBlue"}  else {$TenantName = "NotSet"; $TextBox1.BackColor = "LightCoral"} # -> имя тенанта Azure Active Directory (до @onmicrosoft.com), которое было выбрано  при создании заказчика на сайте partner.microsoft.com
+if ($TextBox2.Text -notmatch "например")  {$SubscriptionName  = $TextBox2.Text; $TextBox2.BackColor = "LightBlue"}              else {$SubscriptionName = "NotSet"; $TextBox2.BackColor = "LightCoral"}    # -> наименование организации заказчика, которое было указано при создании заказчика на сайте partner.microsoft.com
+if ($TextBox05.text) {$AzureTenantCstmrAdminPwd = $TextBox05.text; $TextBox05.BackColor = "LightBlue"}      else {$AzureTenantCstmrAdminPwd = "NotSet"; $TextBox05.BackColor = "LightCoral" }
+if ($TextBox06.text) {$AzureTenantCstmrCloudAdminPwd = $TextBox06.text; $TextBox06.BackColor = "LightBlue"} else {$AzureTenantCstmrCloudAdminPwd = "NotSet"; $TextBox06.BackColor = "LightCoral" }
+
+if ($TenantName -notmatch "NotSet" ) {$AzureTenantCstmrAdmin  = "admin@$TenantName"} else {$AzureTenantCstmrAdmin  = "NotSet"}
+
+
+if($ComboBox1.SelectedItem)  {$IaaS_CQ_AvailSetCount      = [int]$ComboBox1.SelectedItem; $ComboBox1.BackColor = "LightBlue" }  else {$IaaS_CQ_AvailSetCount   = "NotSet"; $ComboBox1.BackColor = "LightCoral"} 
+if($ComboBox2.SelectedItem)  {$IaaS_CQ_CoresCount         = [int]$ComboBox2.SelectedItem; $ComboBox2.BackColor = "LightBlue" }  else {$IaaS_CQ_CoresCount      = "NotSet"; $ComboBox2.BackColor = "LightCoral"}
+if($ComboBox3.SelectedItem)  {$IaaS_CQ_VMScaleSetCount    = [int]$ComboBox3.SelectedItem; $ComboBox3.BackColor = "LightBlue" }  else {$IaaS_CQ_VMScaleSetCount = "NotSet"; $ComboBox3.BackColor = "LightCoral"}
+if($ComboBox4.SelectedItem)  {$IaaS_CQ_VMMachineCount     = [int]$ComboBox4.SelectedItem; $ComboBox4.BackColor = "LightBlue" }  else {$IaaS_CQ_VMMachineCount  = "NotSet"; $ComboBox4.BackColor = "LightCoral"}
+if($ComboBox5.SelectedItem)  {$IaaS_CQ_STDStorageSize     = [int]$ComboBox5.SelectedItem; $ComboBox5.BackColor = "LightBlue" }  else {$IaaS_CQ_STDStorageSize  = "NotSet"; $ComboBox5.BackColor = "LightCoral"}
+if($ComboBox6.SelectedItem)  {$IaaS_CQ_PREMStorageSize    = [int]$ComboBox6.SelectedItem; $ComboBox6.BackColor = "LightBlue" }  else {$IaaS_CQ_PREMStorageSize = "NotSet"; $ComboBox6.BackColor = "LightCoral"}
+if($ComboBox7.SelectedItem)  {$IaaS_NQ_VNetCount          = [int]$ComboBox7.SelectedItem; $ComboBox7.BackColor = "LightBlue" }  else {$IaaS_NQ_VNetCount       = "NotSet"; $ComboBox7.BackColor = "LightCoral"}
+if($ComboBox8.SelectedItem)  {$IaaS_NQ_NicsCount          = [int]$ComboBox8.SelectedItem; $ComboBox8.BackColor = "LightBlue" }  else {$IaaS_NQ_NicsCount       = "NotSet"; $ComboBox8.BackColor = "LightCoral"}
+if($ComboBox9.SelectedItem)  {$IaaS_NQ_PIPCount           = [int]$ComboBox9.SelectedItem; $ComboBox9.BackColor = "LightBlue" }  else {$IaaS_NQ_PIPCount        = "NotSet"; $ComboBox9.BackColor = "LightCoral"}
+if($ComboBox10.SelectedItem -in @(0,1,2)) {$IaaS_NQ_VNGCount  = [int]$ComboBox10.SelectedItem; $ComboBox10.BackColor = "LightBlue"  } else {$IaaS_NQ_VNGCount      = "NotSet"; $ComboBox10.BackColor = "LightCoral"} 
+if($ComboBox11.SelectedItem) {$IaaS_NQ_VNGConCount        = [int]$ComboBox11.SelectedItem; $ComboBox11.BackColor = "LightBlue"  } else {$IaaS_NQ_VNGConCount   = "NotSet"; $ComboBox11.BackColor = "LightCoral"}
+if($ComboBox12.SelectedItem) {$IaaS_NQ_LBCount            = [int]$ComboBox12.SelectedItem; $ComboBox12.BackColor = "LightBlue"  } else {$IaaS_NQ_LBCount       = "NotSet"; $ComboBox12.BackColor = "LightCoral"} 
+if($ComboBox13.SelectedItem) {$IaaS_NQ_SGCount            = [int]$ComboBox13.SelectedItem; $ComboBox13.BackColor = "LightBlue"  } else {$IaaS_NQ_SGCount       = "NotSet"; $ComboBox13.BackColor = "LightCoral"}
+if($ComboBox14.SelectedItem) {$IaaS_SQ_Capacity           = [int]$ComboBox14.SelectedItem; $ComboBox14.BackColor = "LightBlue"  } else {$IaaS_SQ_Capacity      = "NotSet"; $ComboBox14.BackColor = "LightCoral"}
+if($ComboBox15.SelectedItem) {$IaaS_SQ_SACount            = [int]$ComboBox15.SelectedItem; $ComboBox15.BackColor = "LightBlue"  } else {$IaaS_SQ_SACount       = "NotSet"; $ComboBox15.BackColor = "LightCoral"}
+if($ComboBox16.SelectedItem) {$SQLQuotaName               = ($ComboBox16.SelectedItem).ToString().Replace(" ",""); $ComboBox16.BackColor = "LightBlue" } else {$SQLQuotaName = "NotSet"; $ComboBox16.BackColor = "LightCoral"}
 #$WebQuotaName            =   $ComboBox17.SelectedItem
-if ($ComboBox17.SelectedItem -eq "1 App SP"){$WebQuotaName = "ext-1AppSP-web"}
-if ($ComboBox17.SelectedItem -eq "3 App SP"){$WebQuotaName = "ext-3AppSP-web"}
-if ($ComboBox17.SelectedItem -eq "Evaluation"){$WebQuotaName = "Evaluation"}
+if($ComboBox17.SelectedItem){
+    if ($ComboBox17.SelectedItem -eq "1 App SP"){$WebQuotaName = "ext-1AppSP-web"; $ComboBox17.BackColor = "LightBlue" }
+    if ($ComboBox17.SelectedItem -eq "3 App SP"){$WebQuotaName = "ext-3AppSP-web"; $ComboBox17.BackColor = "LightBlue" }
+    if ($ComboBox17.SelectedItem -eq "Evaluation"){$WebQuotaName = "Evaluation"; $ComboBox17.BackColor = "LightBlue" }
+} else {$WebQuotaName = "NotSet"; $ComboBox17.BackColor = "LightCoral"}
+
+    #$AZSAdminSubscrUserName `
+    #  `
+    #-and $AzureTenantCstmrAdmin
+    # -and $TenantName `
+    
+    #if ( ($AzureTenantCstmrCloudAdminPwd) -and (($AZSRegionName -match "msknorth") -or ($AZSRegionName -match "azuremsk")) `
+if ( ($AZSRegionName -match "msknorth") -or ($AZSRegionName -match "azuremsk") `
+      -and  $CustomerAzureSubscrID      -notmatch "NotSet" `
+      -and  $TenantName                 -notmatch "NotSet" `
+      -and  $SubscriptionName           -notmatch "NotSet" `
+      -and  $AzureTenantCstmrAdmin      -notmatch "NotSet" `
+      -and  $AzureTenantCstmrAdminPwd   -notmatch "NotSet" `
+      -and  $AzureTenantCstmrCloudAdminPwd -notmatch "NotSet" `
+      -and  $IaaS_CQ_AvailSetCount      -notmatch "NotSet" `
+      -and  $IaaS_CQ_CoresCount         -notmatch "NotSet" `
+      -and  $IaaS_CQ_VMScaleSetCount    -notmatch "NotSet" `
+      -and  $IaaS_CQ_VMMachineCount     -notmatch "NotSet" `
+      -and  $IaaS_CQ_STDStorageSize     -notmatch "NotSet" `
+      -and  $IaaS_CQ_PREMStorageSize    -notmatch "NotSet" `
+      -and  $IaaS_NQ_VNetCount          -notmatch "NotSet" `
+      -and  $IaaS_NQ_NicsCount          -notmatch "NotSet" `
+      -and  $IaaS_NQ_PIPCount           -notmatch "NotSet" `
+      -and  $IaaS_NQ_VNGCount           -notmatch "NotSet" `
+      -and  $IaaS_NQ_VNGConCount        -notmatch "NotSet" `
+      -and  $IaaS_NQ_LBCount            -notmatch "NotSet" `
+      -and  $IaaS_NQ_SGCount            -notmatch "NotSet" `
+      -and  $IaaS_SQ_Capacity           -notmatch "NotSet" `
+      -and  $IaaS_SQ_SACount            -notmatch "NotSet" `
+      -and  $SQLQuotaName  -notmatch "NotSet" `
+      -and  $WebQuotaName -notmatch "NotSet" `
+ ){
+    write-host "All parameters provided" -ForegroundColor Green
+    write-host "AZSAdminSubscrUserName: $AZSAdminSubscrUserName"     
+    write-host "AZSAdminSubscrPwd: $AZSAdminSubscrPwd "
+    
+    New-AZSOnboarding  -AZSRegionName $AZSRegionName `
+                       -AZSAdminSubscrUserName $AZSAdminSubscrUserName `
+                       -AZSAdminSubscrPwd $AZSAdminSubscrPwd `
+                       -CustomerAzureSubscrID $CustomerAzureSubscrID `
+                       -TenantName $TenantName `
+                       -SubscriptionName $SubscriptionName `
+                       -AzureTenantCstmrCloudAdminPwd $AzureTenantCstmrCloudAdminPwd `
+                       -AzureTenantCstmrAdmin $AzureTenantCstmrAdmin `
+                       -AzureTenantCstmrAdminPwd $AzureTenantCstmrAdminPwd `
+                       -IaaS_CQ_AvailSetCount $IaaS_CQ_AvailSetCount `
+                       -IaaS_CQ_CoresCount $IaaS_CQ_CoresCount `
+                       -IaaS_CQ_VMScaleSetCount $IaaS_CQ_VMScaleSetCount `
+                       -IaaS_CQ_VMMachineCount $IaaS_CQ_VMMachineCount `
+                       -IaaS_CQ_STDStorageSize $IaaS_CQ_STDStorageSize `
+                       -IaaS_CQ_PREMStorageSize $IaaS_CQ_PREMStorageSize `
+                       -IaaS_NQ_VNetCount $IaaS_NQ_VNetCount `
+                       -IaaS_NQ_NicsCount $IaaS_NQ_NicsCount `
+                       -IaaS_NQ_PIPCount $IaaS_NQ_PIPCount `
+                       -IaaS_NQ_VNGCount $IaaS_NQ_VNGCount `
+                       -IaaS_NQ_VNGConCount $IaaS_NQ_VNGConCount `
+                       -IaaS_NQ_LBCount $IaaS_NQ_LBCount `
+                       -IaaS_NQ_SGCount $IaaS_NQ_SGCount `
+                       -IaaS_SQ_Capacity $IaaS_SQ_Capacity `
+                       -IaaS_SQ_SACount $IaaS_SQ_SACount `
+                       -SQLQuotaName $SQLQuotaName `
+                       -WebQuotaName $WebQuotaName  
 
 
 
-$script:FormFields = new-object psobject
-$script:FormFields | add-member –membertype NoteProperty –name AZSAdminSubscrUserName –value NotSet #
-$script:FormFields | add-member –membertype NoteProperty –name AZSAdminSubscrPwd –value NotSet     #
-$script:FormFields | add-member –membertype NoteProperty –name CustomerAzureSubscrID –value NotSet#
-$script:FormFields | add-member –membertype NoteProperty –name TenantName –value NotSet           #
-$script:FormFields | add-member –membertype NoteProperty –name SubscriptionName –value NotSet     #
-$script:FormFields | add-member –membertype NoteProperty –name AzureTenantCstmrCloudAdminPwd –value NotSet #
-$script:FormFields | add-member –membertype NoteProperty –name AzureTenantCstmrAdmin –value NotSet#
-$script:FormFields | add-member –membertype NoteProperty –name AzureTenantCstmrAdminPwd –value NotSet#
-$script:FormFields | add-member –membertype NoteProperty –name IaaS_CQ_AvailSetCount –value NotSet
-$script:FormFields | add-member –membertype NoteProperty –name IaaS_CQ_CoresCount  –value NotSet
-$script:FormFields | add-member –membertype NoteProperty –name IaaS_CQ_VMScaleSetCount –value NotSet
-$script:FormFields | add-member –membertype NoteProperty –name IaaS_CQ_VMMachineCount –value NotSet
-$script:FormFields | add-member –membertype NoteProperty –name IaaS_CQ_STDStorageSize –value NotSet
-$script:FormFields | add-member –membertype NoteProperty –name IaaS_CQ_PREMStorageSize –value NotSet
-$script:FormFields | add-member –membertype NoteProperty –name IaaS_NQ_VNetCount –value NotSet
-$script:FormFields | add-member –membertype NoteProperty –name IaaS_NQ_NicsCount –value NotSet
-$script:FormFields | add-member –membertype NoteProperty –name IaaS_NQ_PIPCount –value NotSet
-$script:FormFields | add-member –membertype NoteProperty –name IaaS_NQ_VNGCount –value NotSet
-$script:FormFields | add-member –membertype NoteProperty –name IaaS_NQ_VNGConCount –value NotSet
-$script:FormFields | add-member –membertype NoteProperty –name IaaS_NQ_LBCount –value NotSet
-$script:FormFields | add-member –membertype NoteProperty –name IaaS_NQ_SGCount  –value NotSet
-$script:FormFields | add-member –membertype NoteProperty –name IaaS_SQ_Capacity   –value NotSet
-$script:FormFields | add-member –membertype NoteProperty –name IaaS_SQ_SACount –value NotSet
-$script:FormFields | add-member –membertype NoteProperty –name SQLQuotaName –value NotSet
-$script:FormFields | add-member –membertype NoteProperty –name WebQuotaName –value NotSet
-
-$script:FormFields.AZSAdminSubscrUserName    = $AZSAdminSubscrUserName
-$script:FormFields.AZSAdminSubscrPwd         = $AZSAdminSubscrPwd
-$script:FormFields.CustomerAzureSubscrID     = $CustomerAzureSubscrID
-$script:FormFields.TenantName                = $TenantName
-
-$script:FormFields.SubscriptionName                    = $SubscriptionName
-$script:FormFields.AzureTenantCstmrCloudAdminPwd       = $AzureTenantCstmrCloudAdminPwd
-$script:FormFields.AzureTenantCstmrAdmin               = $AzureTenantCstmrAdmin 
-$script:FormFields.AzureTenantCstmrAdminPwd            = $AzureTenantCstmrAdminPwd
-$script:FormFields.IaaS_CQ_AvailSetCount               = $IaaS_CQ_AvailSetCount
-$script:FormFields.IaaS_CQ_CoresCount                  = $IaaS_CQ_CoresCount 
-$script:FormFields.IaaS_CQ_VMScaleSetCount             = $IaaS_CQ_VMScaleSetCount
-$script:FormFields.IaaS_CQ_VMMachineCount              = $IaaS_CQ_VMMachineCount
-$script:FormFields.IaaS_CQ_STDStorageSize              = $IaaS_CQ_STDStorageSize
-$script:FormFields.IaaS_CQ_PREMStorageSize             = $IaaS_CQ_PREMStorageSize
-$script:FormFields.IaaS_NQ_VNetCount                   = $IaaS_NQ_VNetCount
-$script:FormFields.IaaS_NQ_NicsCount                   = $IaaS_NQ_NicsCount
-$script:FormFields.IaaS_NQ_PIPCount                    = $IaaS_NQ_PIPCount
-$script:FormFields.IaaS_NQ_VNGCount                    = $IaaS_NQ_VNGCount
-$script:FormFields.IaaS_NQ_VNGConCount                 = $IaaS_NQ_VNGConCount
-$script:FormFields.IaaS_NQ_LBCount                     = $IaaS_NQ_LBCount
-$script:FormFields.IaaS_NQ_SGCount                     = $IaaS_NQ_SGCount
-$script:FormFields.IaaS_SQ_Capacity                    = $IaaS_SQ_Capacity
-$script:FormFields.IaaS_SQ_SACount                     = $IaaS_SQ_SACount
-$script:FormFields.SQLQuotaName                        = $SQLQuotaName
-$script:FormFields.WebQuotaName                        = $WebQuotaName  
+ } else {
+    write-host -ForegroundColor Yellow "Please provide all required parameters to continue"
+ }
 
 
+#$script:FormFields = new-object psobject
+#$script:FormFields | add-member –membertype NoteProperty –name AZSAdminSubscrUserName –value NotSet #
+#$script:FormFields | add-member –membertype NoteProperty –name AZSAdminSubscrPwd –value NotSet     #
+#$script:FormFields | add-member –membertype NoteProperty –name CustomerAzureSubscrID –value NotSet#
+#$script:FormFields | add-member –membertype NoteProperty –name TenantName –value NotSet           #
+#$script:FormFields | add-member –membertype NoteProperty –name SubscriptionName –value NotSet     #
+#$script:FormFields | add-member –membertype NoteProperty –name AzureTenantCstmrCloudAdminPwd –value NotSet #
+#$script:FormFields | add-member –membertype NoteProperty –name AzureTenantCstmrAdmin –value NotSet#
+#$script:FormFields | add-member –membertype NoteProperty –name AzureTenantCstmrAdminPwd –value NotSet#
+#$script:FormFields | add-member –membertype NoteProperty –name IaaS_CQ_AvailSetCount –value NotSet
+#$script:FormFields | add-member –membertype NoteProperty –name IaaS_CQ_CoresCount  –value NotSet
+#$script:FormFields | add-member –membertype NoteProperty –name IaaS_CQ_VMScaleSetCount –value NotSet
+#$script:FormFields | add-member –membertype NoteProperty –name IaaS_CQ_VMMachineCount –value NotSet
+#$script:FormFields | add-member –membertype NoteProperty –name IaaS_CQ_STDStorageSize –value NotSet
+#$script:FormFields | add-member –membertype NoteProperty –name IaaS_CQ_PREMStorageSize –value NotSet
+#$script:FormFields | add-member –membertype NoteProperty –name IaaS_NQ_VNetCount –value NotSet
+#$script:FormFields | add-member –membertype NoteProperty –name IaaS_NQ_NicsCount –value NotSet
+#$script:FormFields | add-member –membertype NoteProperty –name IaaS_NQ_PIPCount –value NotSet
+#$script:FormFields | add-member –membertype NoteProperty –name IaaS_NQ_VNGCount –value NotSet
+#$script:FormFields | add-member –membertype NoteProperty –name IaaS_NQ_VNGConCount –value NotSet
+#$script:FormFields | add-member –membertype NoteProperty –name IaaS_NQ_LBCount –value NotSet
+#$script:FormFields | add-member –membertype NoteProperty –name IaaS_NQ_SGCount  –value NotSet
+#$script:FormFields | add-member –membertype NoteProperty –name IaaS_SQ_Capacity   –value NotSet
+#$script:FormFields | add-member –membertype NoteProperty –name IaaS_SQ_SACount –value NotSet
+#$script:FormFields | add-member –membertype NoteProperty –name SQLQuotaName –value NotSet
+#$script:FormFields | add-member –membertype NoteProperty –name WebQuotaName –value NotSet
+
+#$script:FormFields.AZSAdminSubscrUserName    = $AZSAdminSubscrUserName
+#$script:FormFields.AZSAdminSubscrPwd         = $AZSAdminSubscrPwd
+#$script:FormFields.CustomerAzureSubscrID     = $CustomerAzureSubscrID
+#$script:FormFields.TenantName                = $TenantName
+#
+#$script:FormFields.SubscriptionName                    = $SubscriptionName
+#$script:FormFields.AzureTenantCstmrCloudAdminPwd       = $AzureTenantCstmrCloudAdminPwd
+#$script:FormFields.AzureTenantCstmrAdmin               = $AzureTenantCstmrAdmin 
+#$script:FormFields.AzureTenantCstmrAdminPwd            = $AzureTenantCstmrAdminPwd
+#$script:FormFields.IaaS_CQ_AvailSetCount               = $IaaS_CQ_AvailSetCount
+#$script:FormFields.IaaS_CQ_CoresCount                  = $IaaS_CQ_CoresCount 
+#$script:FormFields.IaaS_CQ_VMScaleSetCount             = $IaaS_CQ_VMScaleSetCount
+#$script:FormFields.IaaS_CQ_VMMachineCount              = $IaaS_CQ_VMMachineCount
+#$script:FormFields.IaaS_CQ_STDStorageSize              = $IaaS_CQ_STDStorageSize
+#$script:FormFields.IaaS_CQ_PREMStorageSize             = $IaaS_CQ_PREMStorageSize
+#$script:FormFields.IaaS_NQ_VNetCount                   = $IaaS_NQ_VNetCount
+#$script:FormFields.IaaS_NQ_NicsCount                   = $IaaS_NQ_NicsCount
+#$script:FormFields.IaaS_NQ_PIPCount                    = $IaaS_NQ_PIPCount
+#$script:FormFields.IaaS_NQ_VNGCount                    = $IaaS_NQ_VNGCount
+#$script:FormFields.IaaS_NQ_VNGConCount                 = $IaaS_NQ_VNGConCount
+#$script:FormFields.IaaS_NQ_LBCount                     = $IaaS_NQ_LBCount
+#$script:FormFields.IaaS_NQ_SGCount                     = $IaaS_NQ_SGCount
+#$script:FormFields.IaaS_SQ_Capacity                    = $IaaS_SQ_Capacity
+#$script:FormFields.IaaS_SQ_SACount                     = $IaaS_SQ_SACount
+#$script:FormFields.SQLQuotaName                        = $SQLQuotaName
+#$script:FormFields.WebQuotaName                        = $WebQuotaName  
 
 
 
 
-$Form.Close();
+#return $script:FormFields
+#$Form.Close();
 }
 $CreateButton.Add_Click($CreateButtonEventHandler) ;
 
@@ -1639,10 +1796,18 @@ $AuthenticateEventHandler = [System.EventHandler]{
     $CheckDomainButton.visible = $true
     
     #Activating Comboboxes
+
+    ##
+    $CB0Values=@("AzureMSK Hybrid(HDD+SSD)-КЦОД","MSKNorth AllFlash(SSD)-DataPro");
+    $ComboBox0.Items.AddRange($CB0Values)
+    $ComboBox0.selectedindex = 0
+    $ComboBox0.BackColor ="lightblue";
+
     $CB1Values=@("1","2","3","4");
     $ComboBox1.Items.AddRange($CB1Values)
     $ComboBox1.selectedindex = 1 
     $ComboBox1.BackColor ="lightblue";
+    
     
     ##
     $CB2Values=@(1..64);
@@ -1734,13 +1899,13 @@ $AuthenticateEventHandler = [System.EventHandler]{
     ##
     $CB16Values=@("10GB 5DB","10GB 10DBs","100GB 10DBs");
     $ComboBox16.Items.AddRange($CB16Values);
-    $ComboBox16.selectedindex = 0
+    #$ComboBox16.selectedindex = 0
     $ComboBox16.BackColor ="lightblue";
     
     ##
     $CB17Values=@("1 App SP","3 App SP","Evaluation");
     $ComboBox17.Items.AddRange($CB17Values);
-    $ComboBox17.selectedindex = 2 
+    #$ComboBox17.selectedindex = 2 
     $ComboBox17.BackColor ="lightblue";
     
     #
@@ -1789,6 +1954,7 @@ $Form.Controls.Add($Label02);
 $Form.Controls.Add($Label03);
 $Form.Controls.Add($Label04);
 $Form.Controls.Add($Label05);
+$Form.Controls.Add($Label06);
 $Form.Controls.Add($Label1);
 $Form.Controls.Add($Label2);
 $Form.Controls.Add($Label3);
@@ -1821,6 +1987,8 @@ $Form.Controls.Add($Label29);
 $Form.Controls.Add($Label30);
 $Form.Controls.Add($Label31);
 $Form.Controls.Add($Label32);
+$Form.Controls.Add($Label33);
+$Form.Controls.Add($Label34);
 $Form.Controls.Add($TextBox01);
 $Form.Controls.Add($TextBox02);
 $Form.Controls.Add($TextBox0002);
@@ -1845,6 +2013,7 @@ $Form.Controls.Add($DebugTextBox);
 $Form.Controls.Add($TextBox1);
 $Form.Controls.Add($TextBox2);
 $Form.Controls.Add($TextBox3);
+$form.Controls.Add($ComboBox0);
 $form.Controls.Add($ComboBox1);
 $form.Controls.Add($ComboBox2);
 $form.Controls.Add($ComboBox3);
@@ -1890,9 +2059,15 @@ $form.Controls.Add($RadioButton1);
 $form.Controls.Add($RadioButton2);
 $form.Controls.Add($BrowsCSVButton);
 
-
+$form.add_Closing({
+    Write-Host 'Form Closed'
+    # code to release any created in form
+    $script:FormFields = "FormCLosedByUser"
+})
 
 $Form.ShowDialog()|Out-Null
+
+
 
 return $script:FormFields
 }

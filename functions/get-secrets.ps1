@@ -47,23 +47,78 @@ try {
                                                                      $Global:CredCheckState ="correct"
                                                                      #Write-Host -ForegroundColor green "Account authenticated and correct permissions granted"
                                                                      
-
+                                                                    # Get Service Principal ApplicationID and Application Secret from KeyVault
                                                                      $ApplicationIdSec     = (Get-AzKeyVaultSecret -VaultName 'ProvKeyVault1' -Name partnerappid).SecretValue
                                                                      $ApplicationIdBin     = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($ApplicationIdSec)
                                                                      $ApplicationId        = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($ApplicationIdBin)
+
+                                                                     $ApplicationSecret    = (Get-AzKeyVaultSecret -VaultName 'ProvKeyVault1' -Name partnerappkey).SecretValue
                                                                      
-                                                                     $RefreshtokenSec      = (Get-AzKeyVaultSecret -VaultName 'ProvKeyVault1' -Name partnerapprefreshtoken).SecretValue
-                                                                     $RefreshtokenBin      = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($RefreshtokenSec)
-                                                                     $Refreshtoken         = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($RefreshtokenBin)
+                                                                     # Get RefreshToken  SecretObject attributes from KeyVault
+                                                                     $ActualKVRTokenSecret        = Get-AzKeyVaultSecret -VaultName 'ProvKeyVault1' -Name partnerapprefreshtoken
+                                                                     $ActualKVRTokenSecretVersion = $ActualKVRTokenSecret.Version
+                                                                     $ActualKVRTokenSecretUpdated = $ActualKVRTokenSecret.Attributes.Updated
+                                                                    
+                                                                     # Get Actual RefreshToken  Secret value from KeyVault
+                                                                     $ActualKVRTokenSec      = (Get-AzKeyVaultSecret -VaultName 'ProvKeyVault1' -Name partnerapprefreshtoken).SecretValue
+                                                                     $ActualKVRTokenBin      = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($ActualKVRTokenSec)
+                                                                     $ActualRefreshToken     = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($ActualKVRTokenBin)
                                                                      
-                                                                     $ApplicationSecret = (Get-AzKeyVaultSecret -VaultName 'ProvKeyVault1' -Name partnerappkey).SecretValue
-                                                                     
+                                                                     # Create Service prinipal credentials to get a new Token using actual RefreshToken
                                                                      $credential = New-Object System.Management.Automation.PSCredential($ApplicationId, $ApplicationSecret)
                                                                      
-                                                                     $token = New-PartnerAccessToken -ApplicationId "$ApplicationId" `
-                                                                                                     -Scopes 'https://api.partnercenter.microsoft.com/user_impersonation' `
-                                                                                                     -Credential $credential `
-                                                                                                     -RefreshToken $refreshtoken
+                                                                     #  Get a new Token using actual RefreshToken
+                                                                    
+                                                                    # $token = New-PartnerAccessToken -ApplicationId $ApplicationId `
+                                                                    #                                 -Scopes 'https://api.partnercenter.microsoft.com/user_impersonation' `
+                                                                    #                                 -Credential $credential `
+                                                                    #                                 -RefreshToken $ActualRefreshToken
+                                                                    try{
+                                                                            $token = New-PartnerAccessToken -ApplicationId $ApplicationId `
+                                                                                                            -Scopes 'https://api.partnercenter.microsoft.com/user_impersonation' `
+                                                                                                            -Credential $credential `
+                                                                                                            -RefreshToken $ActualRefreshToken
+                                                                    }
+                                                                    catch{
+
+                                                                        $streamReader = [System.IO.StreamReader]::new($_.Exception.Response.GetResponseStream())
+                                                                        $ErrResp = $streamReader.ReadToEnd() | ConvertFrom-Json
+                                                                        $streamReader.Close()
+                                                                    
+                                                                        $script:NewShoppingCardDBG = "catchmessage: $ErrResp" 
+                                                                        write-host "Access token receiving error: $ErrResp " 
+                                                                        write-host "error data: $($ErrResp.data)"
+                                                                    }
+
+
+                                                                    # If ActualKVRTokenSecret is older then 5 days -create a new KeyVaultSecret version and put new RefreshToken in to it 
+                                                                    if($ActualKVRTokenSecretUpdated -lt $(get-date).AddDays(1)){
+
+                                                                        # Take a new RefreshToken from a Token and convert it to secure string to put it as new KeyVault Secret Value
+                                                                        $NewRefreshToken = ConvertTo-SecureString -String  $token.RefreshToken -AsPlainText -Force
+                                                                        
+                                                                        # Put new RefreshToken and  put it as new KeyVault Secret Value
+                                                                        Set-AzKeyVaultSecret          -VaultName 'ProvKeyVault1' `
+                                                                                                      -Name 'partnerapprefreshtoken' `
+                                                                                                      -SecretValue $NewRefreshToken
+
+                                                                        # Actual KeyVault Secret version for 'partnerapprefreshtoken' become oudated and should be disabled
+                                                                        Set-AzKeyVaultSecretAttribute -VaultName 'ProvKeyVault1' `
+                                                                                                      -Name 'partnerapprefreshtoken' `
+                                                                                                      -Version $ActualKVRTokenSecretVersion `
+                                                                                                      -Enable $false
+                                                                        $RefreshTokenUpdateStatus = "RefreshToken KeyVault secret - Updated$(get-date)" # RefreshToken update status for diagnostic message
+
+                                                                    }   else {
+                                                                              # RefreshToken update status for diagnostic message
+                                                                              $RefreshTokenUpdateStatus = "RefreshToken KeyVault secret - was not updated - last update: $ActualKVRTokenSecretUpdated"
+                                                                                                                                    
+                                                                             }
+                                                                    
+                                                                    
+                                                                    
+
+
                                                                      <# to create a new token  with two factor Authorization
                                                                      $token = New-PartnerAccessToken -ApplicationId 'a3d9619d-bae9-4750-8f74-722d9e56d0ca' `
                                                                                                      -Scopes 'https://api.partnercenter.microsoft.com/user_impersonation' `
@@ -78,9 +133,9 @@ try {
                                                                      $script:PCenterAccessToken = $token.AccessToken
                                                                      
                                                                      $TokenExpires = $token.ExpiresOn.LocalDateTime
-                                                                     if ($token.AccessToken){$TokenRcvState = "Token received"} else {$TokenRcvState = "Token not received"}
+                                                                     if ($token.AccessToken){$TokenRcvState = "Access token received"} else {$TokenRcvState = "Access token not received"}
 
-                                                                     $Global:OutputMsg = "Account authenticated and correct permissions granted ` $AccountExpirationMsg ` $TokenRcvState  Token expires: $TokenExpires"
+                                                                     $Global:OutputMsg = "Account authenticated and correct permissions granted ` $AccountExpirationMsg ` $TokenRcvState ` Access token will expire: $TokenExpires ` $RefreshTokenUpdateStatus"
 
 
 
