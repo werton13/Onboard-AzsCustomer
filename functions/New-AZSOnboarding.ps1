@@ -29,6 +29,7 @@ param(
       [string]$SQLQuotaName,
       [string]$WebQuotaName
     )
+#region debugparameters    
 write-host "ПАРАМЕТРЫ ПОЛУЧЕНЫ"
 
 write-host "AZSRegionName: $AZSRegionName"
@@ -57,6 +58,7 @@ write-host "IaaS_SQ_Capacity: $IaaS_SQ_Capacity"
 write-host "IaaS_SQ_SACount: $IaaS_SQ_SACount"
 write-host "SQLQuotaName: $SQLQuotaName"
 write-host "WebQuotaName: $WebQuotaName"
+#endregion
 
 #
 ##############################################################################################################################################
@@ -193,15 +195,18 @@ write-host "Step-2: Add Azure Environment for Billing Subscription-and define co
 
     $AZConnectResult = connect-AzAccount -Environment "AzureCloud" `
                         -Credential $AzureBillCredential
-                        -verbose
-    write-host "Step-2 Billing Credential AZConnectResult: $AZConnectResult"
+                        
+    write-host "Step-2 Billing Credential AZConnectResult Account: $($AZConnectResult.Context.Account.id)"
+    write-host "Step-2 Billing Credential AZConnectResult SubscriptionName: $($AZConnectResult.Context.Subscription.Name)"
+    
 
     #Get-AzureRmContext -ListAvailable | ?{$_.Environment -like "AzureStackadminLnv5" -and $_.Subscription -like "NameOftheSub"}
     #$env = Get-AzureRmContext -ListAvailable | ?{$_.Environment -like "AzureCloud" }
 
     #$AzureContext      = Get-AzureRmContext -ListAvailable | ?{$_.Environment -like "AzureCloud" }
     #$AzureStackAdminContext = Get-AzureRmContext -ListAvailable | ?{$_.Environment -match "AzureStackAdmin" }
-    $AzureContext = Get-AzContext -ListAvailable | ?{$_.Environment -like "AzureCloud" } #!!! -to check!
+    #$AzureContext = Get-AzContext -ListAvailable | ?{$_.Environment -like "AzureCloud" -and } #!!! -to check!
+    $AzureContext = Get-AzContext -ListAvailable | ?{($_.Environment -like "AzureCloud") -and ($_.Account -match  "$($AZConnectResult.Context.Account.id)")}
     write-host "Step-2 AzureContext: $($AzureContext[0].name )"
     $AzureStackAdminContext = Get-AzContext -ListAvailable | ?{($_.Environment -like "AzureStackAdmin") -and ($_.name -match "$DefProvSubscriptionID")}#!!! - to check!
     write-host "Step-2 AzureStackAdminContext: $($AzureStackAdminContext[0].name )"
@@ -271,16 +276,24 @@ write-host "Step-6: Add Azure Environment for Customer AAD Subscription to work 
     $AuthEndpointCstmr    = (Get-AzEnvironment -Name "AzureCloud").ActiveDirectoryAuthority.TrimEnd('/')
     $AADTenantNameCstmr   = $TenantName
     $AzureTenantId        = (invoke-restmethod "$($AuthEndpointCstmr)/$($AADTenantNameCstmr)/.well-known/openid-configuration").issuer.TrimEnd('/').Split('/')[-1]
-    Login-AzAccount -Environment "AzureCloud" -Credential $AzureTenantCstmrCredential
+    $AZConnectResult      = Login-AzAccount -Environment "AzureCloud" -Credential $AzureTenantCstmrCredential
 
-    $AzureContext      = Get-AzContext -ListAvailable | ?{$_.Environment -like "AzureCloud" }
+    #$AzureContext      = Get-AzContext -ListAvailable | ?{$_.Environment -like "AzureCloud" }
+    $AzureContext          = Get-AzContext -ListAvailable | ?{($_.Environment -like "AzureCloud") -and ($_.Account -match  "$($AZConnectResult.Context.Account.id)")}
+#############
+
+write-host "Step-6 Azure Tenant Custmer Credential AZConnectResult Account: $($AZConnectResult.Context.Account.id)"
+write-host "Step-6 Azure Tenant Custmer Credential AZConnectResult SubscriptionName: $($AZConnectResult.Context.Subscription.Name)"
+
+############
+    
 #endregion
 
 #region Step-7) Create 'cloudadmin' account in Customer AAD subscription and assign 'Global Admins' role to this account
 write-host "Step-7: Create 'cloudadmin' account in Customer AAD subscription and assign 'Global Admins' role to this account" -ForegroundColor Yellow
 #set-azurermcontext -Context $AzureContext # actions below are performing in context of admin@%customertenantname%.onmicrosoft.com 
 set-azcontext -Context $AzureContext[0] #!!!
-write-host "working in AZ Context $($AzureContext[0].name)"
+write-host "Step-7 working in AZ Context $($AzureContext[0].name)"
     
     $PasswordProfile = New-Object -TypeName Microsoft.Open.AzureAD.Model.PasswordProfile
     $PasswordProfile.Password = $AzureTenantCstmrCloudAdminPwd
