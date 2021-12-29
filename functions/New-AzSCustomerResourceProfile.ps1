@@ -1,32 +1,32 @@
 ﻿function New-AzSCustomerResourceProfile {
     param(
-    [string]$TenantName,
-    [string]$AZSSubscriptionName,
-    [int]$IaaS_CQ_AvailSetCount,
-    [int]$IaaS_CQ_CoresCount,
-    [int]$IaaS_CQ_VMScaleSetCount,
-    [int]$IaaS_CQ_VMMachineCount,
-    [int]$IaaS_CQ_STDStorageSize,
-    [int]$IaaS_CQ_PREMStorageSize,
-    [int]$IaaS_NQ_VNetCount,
-    [int]$IaaS_NQ_NicsCount,
-    [int]$IaaS_NQ_PIPCount,
-    [int]$IaaS_NQ_VNGCount,
-    [int]$IaaS_NQ_VNGConCount,
-    [int]$IaaS_NQ_LBCount,
-    [int]$IaaS_NQ_SGCount,
-    [int]$IaaS_SQ_Capacity,
-    [int]$IaaS_SQ_SACount,
-    [string]$SQLQuotaName,
-    [string]$WebQuotaName,
-    [string]$AzureTenantId,
-    [string]$location,
-    [string]$IaaS,
-    [string]$WebApps,
-    [string]$SQL,
-    [string]$EventsHub,
-    [string]$IoT,
-    [string]$AKS
+          [string]$TenantName,
+          [string]$AZSSubscriptionName,
+          [int]$IaaS_CQ_AvailSetCount,
+          [int]$IaaS_CQ_CoresCount,
+          [int]$IaaS_CQ_VMScaleSetCount,
+          [int]$IaaS_CQ_VMMachineCount,
+          [int]$IaaS_CQ_STDStorageSize,
+          [int]$IaaS_CQ_PREMStorageSize,
+          [int]$IaaS_NQ_VNetCount,
+          [int]$IaaS_NQ_NicsCount,
+          [int]$IaaS_NQ_PIPCount,
+          [int]$IaaS_NQ_VNGCount,
+          [int]$IaaS_NQ_VNGConCount,
+          [int]$IaaS_NQ_LBCount,
+          [int]$IaaS_NQ_SGCount,
+          [int]$IaaS_SQ_Capacity,
+          [int]$IaaS_SQ_SACount,
+          [string]$SQLQuotaName,
+          [string]$WebQuotaName,
+          [string]$AzureTenantId,
+          [string]$location,
+          [string]$IaaS,
+          [string]$WebApps,
+          [string]$SQL,
+          [string]$EventsHub,
+          [string]$IoT,
+          [string]$AKS
     #[string]$CustomerAzureTenantID,
     )
      write-host "inside AzSCustomer Resource Profile"
@@ -132,9 +132,9 @@
     }
     
     #Additional resource providers
-    if($EventsHub -eq "Enabled"){}
-    if($IoT -eq "Enabled"){}
-    if($AKS -eq "Enabled"){}
+    if($EventsHub -eq "Enabled"){} # not ready currently
+    if($IoT -eq "Enabled"){}       # not ready currently
+    if($AKS -eq "Enabled"){}       # not ready currently
  
     #create Plans
     

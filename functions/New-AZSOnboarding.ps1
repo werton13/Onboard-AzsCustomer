@@ -1,34 +1,34 @@
 function New-AZSOnboarding {
 
-    param(
+param(
         
-        [string]$AZSRegionName,
-        [string]$AZSAdminSubscrUserName,
-        [string]$AZSAdminSubscrPwd,
-        [string]$CustomerAzureSubscrID,
-        [string]$TenantName,
-        [string]$SubscriptionName,
-        [string]$AzureTenantCstmrCloudAdminPwd,
-        [string]$AzureTenantCstmrAdmin,
-        [string]$AzureTenantCstmrAdminPwd,
-        [string]$IaaS_CQ_AvailSetCount,
-        [string]$IaaS_CQ_CoresCount,
-        [string]$IaaS_CQ_VMScaleSetCount,
-        [string]$IaaS_CQ_VMMachineCount,
-        [string]$IaaS_CQ_STDStorageSize,
-        [string]$IaaS_CQ_PREMStorageSize,
-        [string]$IaaS_NQ_VNetCount,
-        [string]$IaaS_NQ_NicsCount,
-        [string]$IaaS_NQ_PIPCount,
-        [string]$IaaS_NQ_VNGCount,
-        [string]$IaaS_NQ_VNGConCount,
-        [string]$IaaS_NQ_LBCount,
-        [string]$IaaS_NQ_SGCount,
-        [string]$IaaS_SQ_Capacity,
-        [string]$IaaS_SQ_SACount,
-        [string]$SQLQuotaName,
-        [string]$WebQuotaName
-        )
+      [string]$AZSRegionName,
+      [string]$AZSAdminSubscrUserName,
+      [string]$AZSAdminSubscrPwd,
+      [string]$CustomerAzureSubscrID,
+      [string]$TenantName,
+      [string]$SubscriptionName,
+      [string]$AzureTenantCstmrCloudAdminPwd,
+      [string]$AzureTenantCstmrAdmin,
+      [string]$AzureTenantCstmrAdminPwd,
+      [string]$IaaS_CQ_AvailSetCount,
+      [string]$IaaS_CQ_CoresCount,
+      [string]$IaaS_CQ_VMScaleSetCount,
+      [string]$IaaS_CQ_VMMachineCount,
+      [string]$IaaS_CQ_STDStorageSize,
+      [string]$IaaS_CQ_PREMStorageSize,
+      [string]$IaaS_NQ_VNetCount,
+      [string]$IaaS_NQ_NicsCount,
+      [string]$IaaS_NQ_PIPCount,
+      [string]$IaaS_NQ_VNGCount,
+      [string]$IaaS_NQ_VNGConCount,
+      [string]$IaaS_NQ_LBCount,
+      [string]$IaaS_NQ_SGCount,
+      [string]$IaaS_SQ_Capacity,
+      [string]$IaaS_SQ_SACount,
+      [string]$SQLQuotaName,
+      [string]$WebQuotaName
+    )
 write-host "ПАРАМЕТРЫ ПОЛУЧЕНЫ"
 
 write-host "AZSRegionName: $AZSRegionName"
@@ -60,19 +60,13 @@ write-host "WebQuotaName: $WebQuotaName"
 
 #
 ##############################################################################################################################################
-#region 1) Connect to Azure Stack default provider subscription and Retrieving billing subscription account password from Azure Stack Key Vault
+#region Step-1) Connect to Azure Stack default provider subscription and Retrieving billing subscription account password from Azure Stack Key Vault
+
+write-host "Step-1: Connect to Azure Stack default provider subscription and Retrieving billing subscription account password" -ForegroundColor Yellow
 #
 # Register an Azure Resource Manager environment that targets your Azure Stack instance. 
-    #$AZSRegionName      = "azuremsk" #msknorth
-  #  $Script:CapabilityProfile = @{
-  #      "IaaS" =     "Disabled";
-  #      "KeyVault" = "Disabled";
-  #      "WebApps"  = "Disabled";
-  #      "SQL"      = "Disabled";
-  #      "EvensHub" = "Disabled";
-  #      "IoT"      = "Disabled";
-  #      "AKS"      = "Disabled"
-  #      }
+    
+# Create Capability Profile template
 $global:CapabilityProfile = new-object psobject
 $global:CapabilityProfile | add-member -membertype NoteProperty -name IaaS -value NotSet
 $global:CapabilityProfile | add-member -membertype NoteProperty -name KeyVault -value NotSet
@@ -82,13 +76,14 @@ $global:CapabilityProfile | add-member -membertype NoteProperty -name EventsHub 
 $global:CapabilityProfile | add-member -membertype NoteProperty -name IoT -value NotSet
 $global:CapabilityProfile | add-member -membertype NoteProperty -name AKS -value NotSet
 
-
+#Setting Azure Resource Manager environment  depending of Azure Stack region choosed
+write-host -ForegroundColor Cyan "Setting Azure Resource Manager environment parameters depending of Azure Stack region choosed"
     if ($AZSRegionName -eq "azuremsk") {
 
-        Write-Host "$AZSRegionName region choosed "
+        Write-Host "$AZSRegionName region choosed" -ForegroundColor Cyan
 
+        #$AzureStackEnvName  = "ASHAdminAzureMSK"
         $adminARMEndpoint   = "https://adminmanagement.azuremsk.ec.mts.ru"
-        #$AuthEndpoint     = (Get-AzureRmEnvironment -Name "AzureStackAdmin").ActiveDirectoryAuthority.TrimEnd('/')
         $AuthEndpoint       = (Get-AzEnvironment -Name "AzureStackAdmin").ActiveDirectoryAuthority.TrimEnd('/')
         $AADTenantNameAZS   = "iurnvgru.onmicrosoft.com"
         $KeyVaultEndpoint   = "https://adminvault.azuremsk.ec.mts.ru"
@@ -121,8 +116,9 @@ $global:CapabilityProfile | add-member -membertype NoteProperty -name AKS -value
 
     if ($AZSRegionName -eq "msknorth"){
 
+        Write-Host "$AZSRegionName region choosed" -ForegroundColor Cyan
+        #$AzureStackEnvName  = "ASHAdminMSKNorth"
         $adminARMEndpoint   = "https://adminmanagement.msknorth.azs.cloud.mts.ru"
-        #$AuthEndpoint      = (Get-AzureRmEnvironment -Name "AzureStackAdmin").ActiveDirectoryAuthority.TrimEnd('/')
         $AuthEndpoint       = (Get-AzEnvironment -Name "AzureStackAdmin").ActiveDirectoryAuthority.TrimEnd('/')
         $AADTenantNameAZS   = "iurnvgru.onmicrosoft.com"
         $KeyVaultEndpoint   = "https://adminvault.msknorth.azs.cloud.mts.ru"
@@ -155,11 +151,6 @@ $global:CapabilityProfile | add-member -membertype NoteProperty -name AKS -value
     $global:CapabilityProfile
     $TenantId           = (invoke-restmethod "$($AuthEndpoint)/$($AADTenantNameAZS)/.well-known/openid-configuration").issuer.TrimEnd('/').Split('/')[-1]
 
-    #Add-AzureRMEnvironment  -Name "AzureStackAdmin" `
-    #                        -ArmEndpoint $adminARMEndpoint `
-    #                        -AzureKeyVaultDnsSuffix adminvault.azuremsk.ec.mts.ru `
-    #                        -AzureKeyVaultServiceEndpointResourceId "https://adminvault.azuremsk.ec.mts.ru"
-    
     #new version for Az modules
     Add-AzEnvironment -Name "AzureStackAdmin" `
                       -ArmEndpoint $adminARMEndpoint `
@@ -177,27 +168,27 @@ $global:CapabilityProfile | add-member -membertype NoteProperty -name AKS -value
                       -TenantId $TenantId `
                       -Credential $AZSAdminCredential `
                       -ErrorAction Stop
-
+write-host "Current AZS context:"
+Get-AzContext | fl
 #Retrieving billing subscription account password from Azure Stack Key Vault---#################################
 #    we can do this only after we have logged in Azure Stack Default Provider Subscription
     #$AzureBillSubscrPwd =  (Get-AzureKeyVaultSecret -VaultName 'ProvKeyVault1' -Name stackbilling).SecretValue
+    write-host "Retrieving billing subscription account password from Azure Stack Key Vault"
     write-host "VaultName: $VaultName"
     write-host "KeyVaultBillPWDSecretName: $KeyVaultBillPWDSecretName"
     $AzureBillSubscrPwd =  (Get-AzKeyVaultSecret -VaultName $VaultName -Name $KeyVaultBillPWDSecretName).SecretValue
     
- #endregion
+#endregion
 
-#region 2) Add Azure Environment for Billing Subscription-and define contexts------------------------------#################################
+#region Step-2) Add Azure Environment for Billing Subscription-and define contexts------------------------------#################################
+write-host "Step-2: Add Azure Environment for Billing Subscription-and define contexts" -ForegroundColor Yellow
 
-    #$AuthEndpointBill  = (Get-AzureRmEnvironment -Name "AzureCloud").ActiveDirectoryAuthority.TrimEnd('/')
     $AuthEndpointBill  = (Get-AzEnvironment -Name "AzureCloud").ActiveDirectoryAuthority.TrimEnd('/')
     $AADTenantNameBill = "iurmtspjsc.onmicrosoft.com"
     $AzureTenantId     = (invoke-restmethod "$($AuthEndpointBill)/$($AADTenantNameBill)/.well-known/openid-configuration").issuer.TrimEnd('/').Split('/')[-1]
 
     $AzureBillCredential = New-Object System.Management.Automation.PSCredential($BillUserName , $AzureBillSubscrPwd)
-    #Add-AzureRmAccount -EnvironmentName "AzureCloud" -TenantId $AzureTenantId -Credential $AzureCredential
-    
-    #Login-AzAccount -Environment "AzureCloud" -Credential $AzureBillCredential
+
     connect-AzAccount -Environment "AzureCloud" `
                       -Credential $AzureBillCredential
 
@@ -206,75 +197,80 @@ $global:CapabilityProfile | add-member -membertype NoteProperty -name AKS -value
 
     #$AzureContext      = Get-AzureRmContext -ListAvailable | ?{$_.Environment -like "AzureCloud" }
     #$AzureStackAdminContext = Get-AzureRmContext -ListAvailable | ?{$_.Environment -match "AzureStackAdmin" }
-    $AzureContext = Get-AzContext -ListAvailable | ?{$_.Environment -like "AzureCloud" }
-    $AzureStackAdminContext = Get-AzContext -ListAvailable | ?{($_.Environment -like "AzureStackAdmin") -and ($_.name -match "$DefProvSubscriptionID")}
+    $AzureContext = Get-AzContext -ListAvailable | ?{$_.Environment -like "AzureCloud" } #!!! -to check!
+    $AzureStackAdminContext = Get-AzContext -ListAvailable | ?{($_.Environment -like "AzureStackAdmin") -and ($_.name -match "$DefProvSubscriptionID")}#!!! - to check!
 #endregion
 
-#region 3) -Register Customer AAD Subscription ID in Azure Stack billing subscription using 
+#region Step-3) -Register Customer AAD Subscription ID in Azure Stack billing subscription using 
 # set-azurermcontext -Context $AzureContext # actions below are performing in context 'stack_billing@iurmtspjsc.onmicrosoft.com' 
+write-host "Step-3: Register Customer AAD Subscription ID in Azure Stack billing subscription" -ForegroundColor Yellow
+write-host "working in AZ Context $($AzureContext[0]) "
 Set-AzContext -Context $AzureContext[0]
 
-#    $BillSubscrID = (Get-AzureRmSubscription).Id
+#    
     $BillSubscrID = (Get-AzSubscription).id
-
 
     $ApiVersion   = "2017-06-01"
     $RegResourceID = "/subscriptions/$BillSubscrID/resourceGroups/$BillRG/$RegProv/$AZSRegID/customerSubscriptions/$CustomerAzureSubscrID"
-    #New-AzureRmResource -ResourceId $RegResourceID -ApiVersion $ApiVersion -Force
+    
     New-AzResource -ResourceId $RegResourceID `
                    -ApiVersion $ApiVersion `
                    -Force
 #  Here we have to Logout from billing subscription
      #Disconnect-AzureRmAccount -Username stack_billing@iurmtspjsc.onmicrosoft.com
+    write-host "Logout from billing subscription"
     Disconnect-AzAccount  -Username $BillUserName
 #endregion
 
-#region 4) Onboard Customer AAD Subscription ID to Azure Stack  provider AAD subscription
+#region Step-4) Onboard Customer AAD Subscription ID to Azure Stack  provider AAD subscription
+write-host "Step-4: Onboard Customer AAD Subscription ID to Azure Stack  provider AAD subscription" -ForegroundColor Yellow
 
-#set-azurermcontext -Context $AzureStackAdminContext 
 write-host "set-azurermcontext -Context AzureStackAdminContext: $($AzureStackAdminContext[0])"
- Set-AzContext -Context $AzureStackAdminContext[0]
-    $guestDirectoryTenantToBeOnboarded = $TenantName #"<Tenant_Name>.onmicrosoft.com" 
-    #$ResourceGroupName = "tenantdirs-rg" 
-    #$Location = "azuremsk"
-     
- Register-AzSGuestDirectoryTenant -AdminResourceManagerEndpoint $adminARMEndpoint  `
-                                  -DirectoryTenantName $AADTenantNameAZS  `
-                                  -GuestDirectoryTenantName $guestDirectoryTenantToBeOnboarded `
-                                  -Location $Location  `
-                                  -ResourceGroupName $ResourceGroupName `
-                                  -AutomationCredential $AZSAdminCredential
+write-host "working in AZ Context $($AzureStackAdminContext[0])"
+Set-AzContext -Context $AzureStackAdminContext[0]
+$guestDirectoryTenantToBeOnboarded = $TenantName #"<Tenant_Name>.onmicrosoft.com" 
+
+write-host "Register AzSGuestDirectory Tenant "     
+Register-AzSGuestDirectoryTenant -AdminResourceManagerEndpoint $adminARMEndpoint  `
+                                 -DirectoryTenantName $AADTenantNameAZS  `
+                                 -GuestDirectoryTenantName $guestDirectoryTenantToBeOnboarded `
+                                 -Location $Location  `
+                                 -ResourceGroupName $ResourceGroupName `
+                                 -AutomationCredential $AZSAdminCredential
                             
 #endregion
 
-#region 5) Register Azure Stack Provider AAD Subscription ID to Customer AAD subscription
+#region Step-5) Register Azure Stack Provider AAD Subscription ID to Customer AAD subscription
 # Here we dont use context, because this cmdlet use implicit credential
+write-host "Step-5: Register Azure Stack Provider AAD Subscription ID to Customer AAD subscription" -ForegroundColor Yellow
     $AzureTenantCstmrAdminPwdSec = ConvertTo-SecureString -String $AzureTenantCstmrAdminPwd -AsPlainText -Force
     $AzureTenantCstmrCredential  = New-Object System.Management.Automation.PSCredential($AzureTenantCstmrAdmin, $AzureTenantCstmrAdminPwdSec)
     #$tenantARMEndpoint = "https://management.azuremsk.ec.mts.ru" 
-        Register-AzSWithMyDirectoryTenant `
-        -TenantResourceManagerEndpoint $tenantARMEndpoint `
-        -DirectoryTenantName $TenantName `
-        -AutomationCredential $AzureTenantCstmrCredential  `
-        -verbose
+Register-AzSWithMyDirectoryTenant `
+    -TenantResourceManagerEndpoint $tenantARMEndpoint `
+    -DirectoryTenantName $TenantName `
+    -AutomationCredential $AzureTenantCstmrCredential  `
+    -verbose
     #Disconnect-AzureRmAccount -Username $AzureTenantCstmrAdmin
-    Disconnect-AzAccount -Username $AzureTenantCstmrAdmin
+Disconnect-AzAccount -Username $AzureTenantCstmrAdmin
 #endregion
 
-#region 6) Add Azure Environment for  Customer AAD Subscription to work with Customer Azure AD objects
-    #$AuthEndpointCstmr    = (Get-AzureRmEnvironment -Name "AzureCloud").ActiveDirectoryAuthority.TrimEnd('/')
+#region Step-6) Add Azure Environment for  Customer AAD Subscription to work with Customer Azure AD objects
+write-host "Step-6: Add Azure Environment for Customer AAD Subscription to work with Customer Azure AD objects" -ForegroundColor Yellow
+   
     $AuthEndpointCstmr    = (Get-AzEnvironment -Name "AzureCloud").ActiveDirectoryAuthority.TrimEnd('/')
     $AADTenantNameCstmr   = $TenantName
     $AzureTenantId        = (invoke-restmethod "$($AuthEndpointCstmr)/$($AADTenantNameCstmr)/.well-known/openid-configuration").issuer.TrimEnd('/').Split('/')[-1]
-    #Add-AzureRmAccount -EnvironmentName "AzureCloud" -TenantId $AzureTenantId -Credential $AzureCredential
     Login-AzAccount -Environment "AzureCloud" -Credential $AzureTenantCstmrCredential
-#    $AzureContext      = Get-AzureRmContext -ListAvailable | ?{$_.Environment -like "AzureCloud" } #!!! Ý¢Ý£Ý¢ Ý’Ý«Ý”Ý�Ý•Ý¢Ý¡Ý¯ 2 ÝšÝžÝ�Ý¢Ý•ÝšÝ¡Ý¢Ý� - Ý—Ý�Ý’Ý¢Ý Ý� ÝŸÝ ÝžÝ’Ý•Ý Ý˜Ý¢Ý¬!!!
+
     $AzureContext      = Get-AzContext -ListAvailable | ?{$_.Environment -like "AzureCloud" }
 #endregion
 
-#region 7) Create 'cloudadmin' account in Customer AAD subscription and assign 'Global Admins' role to this account
+#region Step-7) Create 'cloudadmin' account in Customer AAD subscription and assign 'Global Admins' role to this account
+write-host "Step-7: Create 'cloudadmin' account in Customer AAD subscription and assign 'Global Admins' role to this account" -ForegroundColor Yellow
 #set-azurermcontext -Context $AzureContext # actions below are performing in context of admin@%customertenantname%.onmicrosoft.com 
 set-azcontext -Context $AzureContext
+write-host "working in AZ Context $AzureContext"
     
     $PasswordProfile = New-Object -TypeName Microsoft.Open.AzureAD.Model.PasswordProfile
     $PasswordProfile.Password = $AzureTenantCstmrCloudAdminPwd
@@ -288,20 +284,14 @@ set-azcontext -Context $AzureContext
     Disconnect-AzAccount  -Username $AzureTenantCstmrAdmin
 #endregion
 
-#region 8) Create Resource Group Quotas Plans and Offers
-#set-azurermcontext -Context $AzureStackAdminContext
-#set-azcontext -Context $AzureStackAdminContext[0]
-set-azcontext -Context $AzureStackAdminContext
+#region Step-8) Create Azure Stack  Resource Group, Quotas, Plans and Offer
+write-host "Step-8: Create Azure Stack  Resource Group, Quotas, Plans and Offer" -ForegroundColor Yellow
+
+write-host "working in AZ Context $($AzureStackAdminContext[0])"
+set-azcontext -Context $AzureStackAdminContext[0]
+#set-azcontext -Context $AzureStackAdminContext
 write-host "CapabilityProfile before profile creation: "
-#$global:CapabilityProfile.GetType()
-#$global:CapabilityProfile.Count
-#
-#$global:CapabilityProfile.IaaS
-#$global:CapabilityProfile.WebApps
-#write-host "SQL: $($global:CapabilityProfile.SQL)"
-#$global:CapabilityProfile.EventsHub
-#$global:CapabilityProfile.IoT
-#$global:CapabilityProfile.AKS
+
 
 $IaaS = "$($global:CapabilityProfile.IaaS)"
 $WebApps = "$($global:CapabilityProfile.WebApps)"
@@ -309,9 +299,9 @@ $SQL = "$($global:CapabilityProfile.SQL)"
 $EventsHub = "$($global:CapabilityProfile.EventsHub)"
 $IoT = "$($global:CapabilityProfile.IoT)"
 $AKS = "$($global:CapabilityProfile.AKS)" 
-write-host "AKS: $AKS"
-write-host "TenantName: $TenantName"
-write-host "get-type: $($TenantName.GetType())"
+write-host "New-AZSOnboarding Step-8 AKS: $AKS"
+write-host "New-AZSOnboarding Step-8 TenantName: $TenantName"
+write-host "New-AZSOnboarding Step-8 get-type: $($TenantName.GetType())"
 $OnboardTenantName = $TenantName #just to ttest
 
 New-AzSCustomerResourceProfile -location $AZSRegionName `
@@ -342,6 +332,7 @@ New-AzSCustomerResourceProfile -location $AZSRegionName `
                                -IoT $IoT `
                                -AKS $AKS
 #endregion
+# need to add condition to success completion notification 
 write-host -ForegroundColor Green -BackgroundColor White "Creation of Azure Stack Subscription for customer $SubscriptionName is complete."
 }
 
