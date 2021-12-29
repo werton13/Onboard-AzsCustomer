@@ -167,7 +167,9 @@ write-host -ForegroundColor Cyan "Setting Azure Resource Manager environment par
     Connect-AzAccount -EnvironmentName "AzureStackAdmin" `
                       -TenantId $TenantId `
                       -Credential $AZSAdminCredential `
-                      -ErrorAction Stop
+                      -ErrorAction Stop `
+                      -Verbose
+
 write-host "Current AZS context:"
 Get-AzContext | fl
 #Retrieving billing subscription account password from Azure Stack Key Vault---#################################
@@ -189,8 +191,10 @@ write-host "Step-2: Add Azure Environment for Billing Subscription-and define co
 
     $AzureBillCredential = New-Object System.Management.Automation.PSCredential($BillUserName , $AzureBillSubscrPwd)
 
-    connect-AzAccount -Environment "AzureCloud" `
-                      -Credential $AzureBillCredential
+    $AZConnectResult = connect-AzAccount -Environment "AzureCloud" `
+                        -Credential $AzureBillCredential
+                        -verbose
+    write-host "Step-2 Billing Credential AZConnectResult: $AZConnectResult"
 
     #Get-AzureRmContext -ListAvailable | ?{$_.Environment -like "AzureStackadminLnv5" -and $_.Subscription -like "NameOftheSub"}
     #$env = Get-AzureRmContext -ListAvailable | ?{$_.Environment -like "AzureCloud" }
@@ -198,20 +202,26 @@ write-host "Step-2: Add Azure Environment for Billing Subscription-and define co
     #$AzureContext      = Get-AzureRmContext -ListAvailable | ?{$_.Environment -like "AzureCloud" }
     #$AzureStackAdminContext = Get-AzureRmContext -ListAvailable | ?{$_.Environment -match "AzureStackAdmin" }
     $AzureContext = Get-AzContext -ListAvailable | ?{$_.Environment -like "AzureCloud" } #!!! -to check!
+    write-host "Step-2 AzureContext: $($AzureContext[0].name )"
     $AzureStackAdminContext = Get-AzContext -ListAvailable | ?{($_.Environment -like "AzureStackAdmin") -and ($_.name -match "$DefProvSubscriptionID")}#!!! - to check!
+    write-host "Step-2 AzureStackAdminContext: $($AzureStackAdminContext[0].name )"
 #endregion
 
 #region Step-3) -Register Customer AAD Subscription ID in Azure Stack billing subscription using 
 # set-azurermcontext -Context $AzureContext # actions below are performing in context 'stack_billing@iurmtspjsc.onmicrosoft.com' 
 write-host "Step-3: Register Customer AAD Subscription ID in Azure Stack billing subscription" -ForegroundColor Yellow
-write-host "working in AZ Context $($AzureContext[0]) "
+write-host "working in AZ Context $($AzureContext[0].name)"
 Set-AzContext -Context $AzureContext[0]
 
 #    
     $BillSubscrID = (Get-AzSubscription).id
+    write-host "Step-3 BillSubscrID: $BillSubscrID"
+    write-host "Step-3 RegProv: $RegProv "
+    write-host "Step-3 AZSRegID: $AZSRegID "
 
     $ApiVersion   = "2017-06-01"
     $RegResourceID = "/subscriptions/$BillSubscrID/resourceGroups/$BillRG/$RegProv/$AZSRegID/customerSubscriptions/$CustomerAzureSubscrID"
+    write-host "Step-3 RegResourceID: $RegResourceID"
     
     New-AzResource -ResourceId $RegResourceID `
                    -ApiVersion $ApiVersion `
@@ -226,7 +236,7 @@ Set-AzContext -Context $AzureContext[0]
 write-host "Step-4: Onboard Customer AAD Subscription ID to Azure Stack  provider AAD subscription" -ForegroundColor Yellow
 
 write-host "set-azurermcontext -Context AzureStackAdminContext: $($AzureStackAdminContext[0])"
-write-host "working in AZ Context $($AzureStackAdminContext[0])"
+write-host "working in AZ Context $($AzureStackAdminContext[0].name)"
 Set-AzContext -Context $AzureStackAdminContext[0]
 $guestDirectoryTenantToBeOnboarded = $TenantName #"<Tenant_Name>.onmicrosoft.com" 
 
@@ -269,8 +279,8 @@ write-host "Step-6: Add Azure Environment for Customer AAD Subscription to work 
 #region Step-7) Create 'cloudadmin' account in Customer AAD subscription and assign 'Global Admins' role to this account
 write-host "Step-7: Create 'cloudadmin' account in Customer AAD subscription and assign 'Global Admins' role to this account" -ForegroundColor Yellow
 #set-azurermcontext -Context $AzureContext # actions below are performing in context of admin@%customertenantname%.onmicrosoft.com 
-set-azcontext -Context $AzureContext
-write-host "working in AZ Context $AzureContext"
+set-azcontext -Context $AzureContext[0] #!!!
+write-host "working in AZ Context $($AzureContext[0].name)"
     
     $PasswordProfile = New-Object -TypeName Microsoft.Open.AzureAD.Model.PasswordProfile
     $PasswordProfile.Password = $AzureTenantCstmrCloudAdminPwd
@@ -286,9 +296,11 @@ write-host "working in AZ Context $AzureContext"
 
 #region Step-8) Create Azure Stack  Resource Group, Quotas, Plans and Offer
 write-host "Step-8: Create Azure Stack  Resource Group, Quotas, Plans and Offer" -ForegroundColor Yellow
-
-write-host "working in AZ Context $($AzureStackAdminContext[0])"
+$AZContextDebug = Get-AzContext -ListAvailable
+write-host "Step-8 AZ Context Available: $AZContextDebug "
+write-host "working in AZ Context $($AzureStackAdminContext[0].name)"
 set-azcontext -Context $AzureStackAdminContext[0]
+
 #set-azcontext -Context $AzureStackAdminContext
 write-host "CapabilityProfile before profile creation: "
 
