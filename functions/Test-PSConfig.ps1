@@ -235,6 +235,17 @@ $TextBox02.ForeColor = "Navy"
 $TextBox02.Visible = $True
 $TextBox02.Text = "S:\AzureStack-Tools-az"
 
+$TextBox03 = New-Object "System.Windows.Forms.TextBox";
+$TextBox03.Top = 265;
+$TextBox03.Left = 460;
+$TextBox03.Height =20
+$TextBox03.Width = 235
+$TextBox03.Font = $Font4Labels
+$TextBox03.ForeColor = "Navy"
+$TextBox03.Visible = $True
+$TextBox03.Text = "$([Environment]::GetFolderPath("Desktop"))"
+
+
 ### Experimental feature
 #$button = $browse = $PSConfigForm = 0
 [void][reflection.assembly]::LoadWithPartialName("System.Windows.Forms")
@@ -243,6 +254,12 @@ $browse.RootFolder = [System.Environment+SpecialFolder]'MyComputer'
 $browse.ShowNewFolderButton = $false
 #$browse.selectedPath = "C:\"
 $browse.Description = "Choose a directory"
+
+$browse2 = new-object system.windows.Forms.FolderBrowserDialog
+$browse2.RootFolder = [System.Environment+SpecialFolder]'MyComputer'
+$browse2.ShowNewFolderButton = $false
+#$brows2e.selectedPath = "C:\"
+$browse2.Description = "Choose a CSP result directory"
 
 $BrowsButton = New-Object system.Windows.Forms.Button
 $BrowsButton.Text = "Choose Directory"
@@ -257,9 +274,21 @@ $BrowsButton.top = 125
 $BrowsButton.Width  = 80
 $BrowsButton.Height = 60
 
-#$browse.SelectedPath
-#$text
-###--end experimental feature
+##############################
+$CSPResultButton = New-Object system.Windows.Forms.Button
+$CSPResultButton.Text = "Choose Directory"
+$CSPResultButton.Font   = $Font4Button
+$CSPResultButton.FlatStyle = [System.Windows.Forms.FlatStyle]::flat;
+$CSPResultButton.FlatAppearance.BorderSize = 1;
+$CSPResultButton.FlatAppearance.BorderColor = [System.Drawing.Color]::Gainsboro
+$CSPResultButton.BackColor = [System.Drawing.Color]::aliceblue 
+$CSPResultButton.Add_Click({$browse2.ShowDialog()})
+$CSPResultButton.left = 705
+$CSPResultButton.top = 265
+$CSPResultButton.Width  = 80
+$CSPResultButton.Height = 60
+
+
 
 
 $Button01 = New-Object “System.Windows.Forms.Button”;
@@ -291,7 +320,7 @@ $Button03 = New-Object “System.Windows.Forms.Button”;
 $Button03.Width  = 200
 $Button03.Height = 100
 $Button03.Left   = 460;
-$Button03.Top    = 235;
+$Button03.Top    = 635;
 $Button03.Text   = "Open Azure Stack tenant registration form";
 $button03.Font   = $Font4Button
 $Button03.FlatStyle = [System.Windows.Forms.FlatStyle]::flat;
@@ -304,6 +333,12 @@ $BrowsButtonEventHandler = [System.EventHandler]{
     $TextBox02.Text = $browse.SelectedPath
 
 }
+
+$CSPResultButtonEventHandler = [System.EventHandler]{
+    $TextBox03.Text = $browse2.SelectedPath
+
+}
+
 
 # Test procedure for Check OS Powershell Configuration event handler
 $СhkPSConfigEventHandler = [System.EventHandler]{
@@ -482,6 +517,7 @@ Print-PSConfigState -TextBoxName $TextBox01 -AzureStackToolsPath $AzureStackTool
 $CallRegistrationFormEventHandler = [System.EventHandler]{
    
     $script:AzureStackToolsPath = $TextBox02.Text
+    $script:CSPCustomerCreationResultPath = $TextBox03.Text
     $PSConfigForm.Close()
 
   
@@ -492,7 +528,10 @@ $Button01.Add_Click($СhkPSConfigEventHandler) ;
 $Button02.Add_Click($СhkandFixcPSConfigEventHandler) ;
 $Button03.Add_Click($CallRegistrationFormEventHandler);
 $BrowsButton.Add_Click($BrowsButtonEventHandler);
+$CSPResultButton.Add_Click($CSPResultButtonEventHandler);
 #$Button.
+
+
 
 $PSConfigForm.Controls.Add($Label01);
 $PSConfigForm.Controls.Add($Label02);
@@ -503,12 +542,17 @@ $PSConfigForm.Controls.Add($Button01);
 $PSConfigForm.Controls.Add($Button02);
 $PSConfigForm.Controls.Add($Button03);
 $PSConfigForm.Controls.Add($BrowsButton);
+$PSConfigForm.Controls.Add($CSPResultButton);
 $PSConfigForm.Controls.Add($TextBox00);
 $PSConfigForm.Controls.Add($TextBox01);
-$PSConfigForm.Controls.Add($TextBox02)
-$PSConfigForm.ShowDialog() |Out-Null
+$PSConfigForm.Controls.Add($TextBox02);
+$PSConfigForm.Controls.Add($TextBox03)
+$PSConfigForm.ShowDialog() | Out-Null
 
-return $script:AzureStackToolsPath 
+#$Global:ReturnPaths = @($script:AzureStackToolsPath, $script:CSPCustomerCreationResultPath)
+#return $Global:ReturnPaths
+$ReturnPaths = @($script:AzureStackToolsPath, $script:CSPCustomerCreationResultPath)
+return $ReturnPaths
 
 
 }

@@ -1,4 +1,11 @@
 ﻿function Get-InputFromForm {
+    param(
+          [string]$CSPResultPath
+          )
+    
+#Debug
+# write-host "CSPResultPath: $CSPResultPath"
+##
 
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
@@ -148,7 +155,47 @@ $pictureBox1.Top = 605
 $pictureBox1.left = 645#5
 $pictureBox1.Image = $ResRelImage
 
+$ASHRegionImage = [system.drawing.image]::FromFile("$PSScriptRoot\icons\AZH.png")
+$ASHRegionPicBox = new-object Windows.Forms.PictureBox
+$ASHRegionPicBox.Width = $ASHRegionImage.Size.Width
+$ASHRegionPicBox.Height = $ASHRegionImage.Size.Height
+$ASHRegionPicBox.Top = 110
+$ASHRegionPicBox.left = 835
+$ASHRegionPicBox.Image = $ASHRegionImage 
 
+$AzureSubscriptionImage = [system.drawing.image]::FromFile("$PSScriptRoot\icons\azsubsc.png")
+$AzureSubscriptionPicBox = new-object Windows.Forms.PictureBox
+$AzureSubscriptionPicBox.Width = $AzureSubscriptionImage.Size.Width
+$AzureSubscriptionPicBox.Height = $AzureSubscriptionImage.Size.Height
+$AzureSubscriptionPicBox.Top = 155
+$AzureSubscriptionPicBox.left = 845
+$AzureSubscriptionPicBox.Image = $AzureSubscriptionImage 
+
+##
+$AdminPWDImage = [system.drawing.image]::FromFile("$PSScriptRoot\icons\pwd.png")
+$AdminPWDPicBox = new-object Windows.Forms.PictureBox
+$AdminPWDPicBox.Width = $AdminPWDImage.Size.Width
+$AdminPWDPicBox.Height = $AdminPWDImage.Size.Height
+$AdminPWDPicBox.Top = 195
+$AdminPWDPicBox.left = 845
+$AdminPWDPicBox.Image = $AdminPWDImage 
+
+
+$CloudAdminPWDImage = [system.drawing.image]::FromFile("$PSScriptRoot\icons\pwd.png")
+$CloudAdminPWDImagePicBox = new-object Windows.Forms.PictureBox
+$CloudAdminPWDImagePicBox.Width = $CloudAdminPWDImage.Size.Width
+$CloudAdminPWDImagePicBox.Height = $CloudAdminPWDImage.Size.Height
+$CloudAdminPWDImagePicBox.Top = 235
+$CloudAdminPWDImagePicBox.left = 845
+$CloudAdminPWDImagePicBox.Image = $CloudAdminPWDImage 
+
+$AZTenantPWDImage = [system.drawing.image]::FromFile("$PSScriptRoot\icons\AzTenant.png")
+$AZTenantPicBox = new-object Windows.Forms.PictureBox
+$AZTenantPicBox.Width = $AZTenantPWDImage.Size.Width
+$AZTenantPicBox.Height = $AZTenantPWDImage.Size.Height
+$AZTenantPicBox.Top = 303
+$AZTenantPicBox.left = 845
+$AZTenantPicBox.Image = $AZTenantPWDImage 
 
 
 
@@ -205,7 +252,7 @@ $Label04.Text = "Пароль существующей у/з 'Admin' в Azure AD
 $Label05 = New-Object “System.Windows.Forms.Label”;
 $Label05.Left = 650#10
 $Label05.Top = 235;
-$Label05.Width =125;
+$Label05.Width =187;
 $label05.Height =40;
 $Label05.Text = "Пароль для создания у/з 'cloudadmin' в Azure AD заказчика";
 
@@ -223,8 +270,8 @@ $Label06.Text = 'Azure Stack Region:'
  $Label1.Left = 650#10
  $Label1.Top = 315;
  $Label1.Width =187;
- $label1.Height =40;
- $Label1.Text = 'Имя тенанта Azure Active Directory (до .onmicrosoft.com)';
+ $label1.Height = 40;
+ $Label1.Text = 'Имя тенанта Azure AD (до .onmicrosoft.com)';
 
  
  #Define Label for Azure Stack Subscription Name
@@ -449,12 +496,12 @@ $Label20.Text = 'Введите данные для создания новог�
 
 #Define Label for logo
 $Label32 = New-Object “System.Windows.Forms.Label”;
-$Label32.Left = 1000;
+$Label32.Left = 800;
 $Label32.Top = 20#15;
-$Label32.Width =140;
-$Label32.Height =65;
+$Label32.Width =350;
+$Label32.Height =25; #65
 $Label32.font = $Font4logo
-$Label32.Text = 'Привет я Franky v.2'
+$Label32.Text = 'Привет! Franky твоя помогать!'
 
 #Define Label for region warning 
 $Label33 = New-Object “System.Windows.Forms.Label”;
@@ -881,7 +928,12 @@ $CreateNewCustomerButtonEventHandler = [System.EventHandler]{
   `r`nAzureSubscriptionID: $script:AzureSubscriptionIDDBG 
   
   "
-  $NewCSPCustomerProperties | Out-File "S:\PS-Scripts\CSPScripts\$($TextBox08.text.replace('"',''))CSPAccount-Details.txt"
+  #$NewCSPCustomerOutpath = 'S:\PS-Scripts\CSPScripts'
+  #$NewCSPCustomerProperties | Out-File "$NewCSPCustomerOutpath\$($TextBox08.text.replace('"',''))CSPAccount-Details.txt"
+  
+  $NewCSPCustomerProperties | Out-File "$CSPResultPath\$($TextBox08.text.replace('"',''))CSPAccount-Details.txt"
+  write-host -ForegroundColor Green "CSP Customer creation details writed to a file: $CSPResultPath\$($TextBox08.text.replace('"',''))CSPAccount-Details.txt"
+
   $TextBox1.text  = $Script:NewCSPCustomerProperties.CustomerDomain #'Имя тенанта (до .onmicrosoft.com)'
   # $Script:NewCSPCustomerProperties.CustomerDomainAdminName
   if($customers){
@@ -1051,7 +1103,7 @@ $TextBox03.Visible = $False
 #Define TextBox04 for Customer Azure Subscription ID
 $TextBox04 = New-Object "System.Windows.Forms.TextBox";
 $TextBox04.readonly =$true
-$TextBox04.Left = 850#210;
+$TextBox04.Left = 880#210;
 $TextBox04.Top = 155;
 $TextBox04.width = 220;
 $TextBox04.text = "введите Azure Subscription ID"
@@ -1062,7 +1114,7 @@ $TextBox04.BackColor = "lightgray";
 #Define TextBox05 for Customer Azure AD admin password
 $TextBox05 = New-Object "System.Windows.Forms.MaskedTextBox";
 $TextBox05.readonly =$true
-$TextBox05.Left = 850#210;
+$TextBox05.Left = 880#210;
 $TextBox05.Top = 195;
 $TextBox05.width = 220;
 $TextBox05.BackColor = "lightgray";
@@ -1075,7 +1127,7 @@ $Textbox05ToolTip.InitialDelay = 0;
 
  #Define TextBox0005 for SHOW Azure AD admin password
  $TextBox0005 = New-Object "System.Windows.Forms.TextBox";
- $TextBox0005.Left = 850#210;
+ $TextBox0005.Left = 880#210;
  $TextBox0005.Top = 195;
  $TextBox0005.width = 220;
  $TextBox0005.BackColor = "lightblue";
@@ -1083,7 +1135,7 @@ $Textbox05ToolTip.InitialDelay = 0;
 
  #Define show pwd button2
  $ShPwdButton2 = New-Object “System.Windows.Forms.Button”;
- $ShPwdButton2.Left = 1100#460;
+ $ShPwdButton2.Left = 1130#460;
  $ShPwdButton2.Top = 195;
  $ShPwdButton2.Width = 35;
  $ShPwdButton2.Height = 20;
@@ -1114,7 +1166,7 @@ $Textbox05ToolTip.InitialDelay = 0;
 #Define TextBox06 for Customer Azure AD 'cloudadmin' password -it is an account intended to manage Azure Stack resources from customer side
 $TextBox06 = New-Object "System.Windows.Forms.MaskedTextBox";
 $TextBox06.readonly = $true
-$TextBox06.Left = 850#210;
+$TextBox06.Left = 880#210;
 $TextBox06.Top = 235;
 $TextBox06.width = 220;
 $TextBox06.BackColor = "lightgray";
@@ -1127,7 +1179,7 @@ $Testbox06ToolTip.InitialDelay = 0;
 
  #Define TextBox0005 for SHOW Azure AD CLOUDADMIN  password
  $TextBox0006 = New-Object "System.Windows.Forms.TextBox";
- $TextBox0006.Left = 850#210;
+ $TextBox0006.Left = 880#210;
  $TextBox0006.Top = 235;
  $TextBox0006.width = 220;
  $TextBox0006.BackColor = "lightblue";
@@ -1135,7 +1187,7 @@ $Testbox06ToolTip.InitialDelay = 0;
 
  #Define show pwd button3
  $ShPwdButton3 = New-Object “System.Windows.Forms.Button”;
- $ShPwdButton3.Left = 1100#460;
+ $ShPwdButton3.Left = 1130#460;
  $ShPwdButton3.Top = 235;
  $ShPwdButton3.Width = 35;
  $ShPwdButton3.Height = 20;
@@ -1166,7 +1218,7 @@ $Testbox06ToolTip.InitialDelay = 0;
 #Define TextBox1 for Label1 - 'Имя тенанта Azure Active Directory (до .onmicrosoft.com)';
 $TextBox1 = New-Object “System.Windows.Forms.TextBox”;
 $TextBox1.readonly = $true
-$TextBox1.Left = 850#210;
+$TextBox1.Left = 880#210;
 $TextBox1.Top = 310;
 $TextBox1.width = 220;
 $Textbox1.text = "короткое имя - например TenanName"
@@ -1174,14 +1226,14 @@ $TextBox1.BackColor = "lightgray";
 
 $Testbox1ToolTip = New-Object "System.Windows.Forms.ToolTip";
 $Testbox1ToolTip.ShowAlways =$true;
-$Testbox1ToolTip.SetToolTip($TextBox1,"Имя тенанта Azure Active Directory (до .onmicrosoft.com), которое было выбрано  при  создании заказчика на сайте partner.microsoft.com");
+$Testbox1ToolTip.SetToolTip($TextBox1,"Имя тенанта Azure Active Directory (до .onmicrosoft.com), которое было выбрано при создании заказчика на сайте partner.microsoft.com");
 $Testbox1ToolTip.InitialDelay = 0;
 
 
 #Define TextBox2 for Label2 - 'Azure Stack Subscription Name'
 $TextBox2 = New-Object “System.Windows.Forms.TextBox”;
 $TextBox2.readonly = $true
-$TextBox2.Left = 850#210;
+$TextBox2.Left = 880#210;
 $TextBox2.Top = 355;
 $TextBox2.width = 220;
 $TextBox2.BackColor = "lightgray";
@@ -1196,7 +1248,7 @@ $Testbox2ToolTip.InitialDelay = 0;
 #$CValues=@("AzureMSK","MSKNorth");
 $ComboBox0 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox0.DroppedDown = $true;
-$ComboBox0.Left = 850#240;
+$ComboBox0.Left = 880#240;
 $ComboBox0.Top  = 115;
 $ComboBox0.Width = 225;
 $ComboBox0.BackColor ="lightgray";
@@ -1237,7 +1289,7 @@ $ComboBox1.Left = 880#240;
 $ComboBox1.Top = 405;
 $ComboBox1.Width =60;
 $ComboBox1.BackColor ="lightgray";
-$ComboBox1.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter their own vaalues in combobox
+$ComboBox1.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # to prevent user to enter their own values in combobox
 #$ComboBox1.Items.AddRange($CValues);
 #$ComboBox1.Items.AddRange('0');
 #$ComboBox1.selectedindex = 1 # set default value - index for the values array
@@ -1419,7 +1471,7 @@ $ComboBox13.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # 
 #$CValues=@(128,256,512,1024,2048,3072,4096,5120,6144,7168,8192,9216,10240,16384,20480);
 $ComboBox14 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox14.DroppedDown = $true;
-$ComboBox14.Left = 1165#525;
+$ComboBox14.Left = 1195#525;
 $ComboBox14.Top = 615;
 $ComboBox14.Width =60;
 $ComboBox14.BackColor ="lightgray";
@@ -1431,7 +1483,7 @@ $ComboBox14.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # 
 #$CValues=@(1..20);
 $ComboBox15 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox15.DroppedDown = $true;
-$ComboBox15.Left = 1165#525;
+$ComboBox15.Left = 1195#525;
 $ComboBox15.Top = 645;
 $ComboBox15.Width =60;
 $ComboBox15.BackColor ="lightgray";
@@ -1443,7 +1495,7 @@ $ComboBox15.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # 
 #$CValues=@("10GB 5DB","10GB 10DBs","100GB 10DBs");
 $ComboBox16 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox16.DroppedDown = $true;
-$ComboBox16.Left = 1135#495;
+$ComboBox16.Left = 1165#495;
 $ComboBox16.Top = 696;
 $ComboBox16.Width =90;
 $ComboBox16.BackColor ="lightgray";
@@ -1455,7 +1507,7 @@ $ComboBox16.DropDownStyle=[System.Windows.Forms.ComboBoxStyle]::DropDownList; # 
 #$CValues=@("1 App SP","3 App SP","Evaluation");
 $ComboBox17 = New-Object "System.Windows.Forms.ComboBox";
 $ComboBox17.DroppedDown = $true;
-$ComboBox17.Left = 1135#495;
+$ComboBox17.Left = 1165#495;
 $ComboBox17.Top = 765;
 $ComboBox17.Width =90;
 $ComboBox17.BackColor ="lightgray";
@@ -1555,7 +1607,7 @@ if($ComboBox6.SelectedItem)  {$IaaS_CQ_PREMStorageSize    = [int]$ComboBox6.Sele
 if($ComboBox7.SelectedItem)  {$IaaS_NQ_VNetCount          = [int]$ComboBox7.SelectedItem; $ComboBox7.BackColor = "LightBlue" }  else {$IaaS_NQ_VNetCount       = "NotSet"; $ComboBox7.BackColor = "LightCoral"}
 if($ComboBox8.SelectedItem)  {$IaaS_NQ_NicsCount          = [int]$ComboBox8.SelectedItem; $ComboBox8.BackColor = "LightBlue" }  else {$IaaS_NQ_NicsCount       = "NotSet"; $ComboBox8.BackColor = "LightCoral"}
 if($ComboBox9.SelectedItem)  {$IaaS_NQ_PIPCount           = [int]$ComboBox9.SelectedItem; $ComboBox9.BackColor = "LightBlue" }  else {$IaaS_NQ_PIPCount        = "NotSet"; $ComboBox9.BackColor = "LightCoral"}
-if($ComboBox10.SelectedItem -in @(0,1,2)) {$IaaS_NQ_VNGCount  = [int]$ComboBox10.SelectedItem; $ComboBox10.BackColor = "LightBlue"  } else {$IaaS_NQ_VNGCount      = "NotSet"; $ComboBox10.BackColor = "LightCoral"} 
+if($ComboBox10.SelectedItem -in @(0,1,2)) {$IaaS_NQ_VNGCount  = [int]$ComboBox10.SelectedItem; $ComboBox10.BackColor = "LightBlue"  } else {$IaaS_NQ_VNGCount  = "NotSet"; $ComboBox10.BackColor = "LightCoral"} 
 if($ComboBox11.SelectedItem) {$IaaS_NQ_VNGConCount        = [int]$ComboBox11.SelectedItem; $ComboBox11.BackColor = "LightBlue"  } else {$IaaS_NQ_VNGConCount   = "NotSet"; $ComboBox11.BackColor = "LightCoral"}
 if($ComboBox12.SelectedItem) {$IaaS_NQ_LBCount            = [int]$ComboBox12.SelectedItem; $ComboBox12.BackColor = "LightBlue"  } else {$IaaS_NQ_LBCount       = "NotSet"; $ComboBox12.BackColor = "LightCoral"} 
 if($ComboBox13.SelectedItem) {$IaaS_NQ_SGCount            = [int]$ComboBox13.SelectedItem; $ComboBox13.BackColor = "LightBlue"  } else {$IaaS_NQ_SGCount       = "NotSet"; $ComboBox13.BackColor = "LightCoral"}
@@ -1575,30 +1627,34 @@ if($ComboBox17.SelectedItem){
     # -and $TenantName `
     
     #if ( ($AzureTenantCstmrCloudAdminPwd) -and (($AZSRegionName -match "msknorth") -or ($AZSRegionName -match "azuremsk")) `
-if ( ($AZSRegionName -match "msknorth") -or ($AZSRegionName -match "azuremsk") `
-      -and  $CustomerAzureSubscrID      -notmatch "NotSet" `
-      -and  $TenantName                 -notmatch "NotSet" `
-      -and  $SubscriptionName           -notmatch "NotSet" `
-      -and  $AzureTenantCstmrAdmin      -notmatch "NotSet" `
-      -and  $AzureTenantCstmrAdminPwd   -notmatch "NotSet" `
+if (  ($CustomerAzureSubscrID              -notmatch "NotSet" `
+      -and  $TenantName                    -notmatch "NotSet" `
+      -and  $SubscriptionName              -notmatch "NotSet" `
+      -and  $AzureTenantCstmrAdmin         -notmatch "NotSet" `
+      -and  $AzureTenantCstmrAdminPwd      -notmatch "NotSet" `
       -and  $AzureTenantCstmrCloudAdminPwd -notmatch "NotSet" `
-      -and  $IaaS_CQ_AvailSetCount      -notmatch "NotSet" `
-      -and  $IaaS_CQ_CoresCount         -notmatch "NotSet" `
-      -and  $IaaS_CQ_VMScaleSetCount    -notmatch "NotSet" `
-      -and  $IaaS_CQ_VMMachineCount     -notmatch "NotSet" `
-      -and  $IaaS_CQ_STDStorageSize     -notmatch "NotSet" `
-      -and  $IaaS_CQ_PREMStorageSize    -notmatch "NotSet" `
-      -and  $IaaS_NQ_VNetCount          -notmatch "NotSet" `
-      -and  $IaaS_NQ_NicsCount          -notmatch "NotSet" `
-      -and  $IaaS_NQ_PIPCount           -notmatch "NotSet" `
-      -and  $IaaS_NQ_VNGCount           -notmatch "NotSet" `
-      -and  $IaaS_NQ_VNGConCount        -notmatch "NotSet" `
-      -and  $IaaS_NQ_LBCount            -notmatch "NotSet" `
-      -and  $IaaS_NQ_SGCount            -notmatch "NotSet" `
-      -and  $IaaS_SQ_Capacity           -notmatch "NotSet" `
-      -and  $IaaS_SQ_SACount            -notmatch "NotSet" `
-      -and  $SQLQuotaName  -notmatch "NotSet" `
-      -and  $WebQuotaName -notmatch "NotSet" `
+      -and  $IaaS_CQ_AvailSetCount         -notmatch "NotSet" `
+      -and  $IaaS_CQ_CoresCount            -notmatch "NotSet" `
+      -and  $IaaS_CQ_VMScaleSetCount       -notmatch "NotSet" `
+      -and  $IaaS_CQ_VMMachineCount        -notmatch "NotSet" `
+      -and  $IaaS_CQ_STDStorageSize        -notmatch "NotSet" `
+      -and  $IaaS_CQ_PREMStorageSize       -notmatch "NotSet" `
+      -and  $IaaS_NQ_VNetCount             -notmatch "NotSet" `
+      -and  $IaaS_NQ_NicsCount             -notmatch "NotSet" `
+      -and  $IaaS_NQ_PIPCount              -notmatch "NotSet" `
+      -and  $IaaS_NQ_VNGCount              -notmatch "NotSet" `
+      -and  $IaaS_NQ_VNGConCount           -notmatch "NotSet" `
+      -and  $IaaS_NQ_LBCount               -notmatch "NotSet" `
+      -and  $IaaS_NQ_SGCount               -notmatch "NotSet" `
+      -and  $IaaS_SQ_Capacity              -notmatch "NotSet" `
+      -and  $IaaS_SQ_SACount               -notmatch "NotSet" `
+     ) -and  (
+               ($AZSRegionName -match "msknorth") `
+           -or (($AZSRegionName -match "azuremsk") `
+                -and  ($SQLQuotaName  -notmatch "NotSet") `
+                -and  ($WebQuotaName  -notmatch "NotSet") `
+               )
+             )
  ){
     write-host "All parameters provided" -ForegroundColor Green
     write-host "AZSAdminSubscrUserName: $AZSAdminSubscrUserName"     
@@ -2055,6 +2111,11 @@ $form.Controls.Add($vGWConPicBox);
 $form.Controls.Add($vLBPicBox);
 $form.Controls.Add($NSGPicBox);
 $form.Controls.Add($LogoPicBox);
+$form.Controls.Add($ASHRegionPicBox);
+$form.Controls.Add($AzureSubscriptionPicBox);
+$form.Controls.Add($AdminPWDPicBox);
+$form.Controls.Add($AZTenantPicBox);
+$form.Controls.Add($CloudAdminPWDImagePicBox);
 $form.Controls.Add($RadioButton1);
 $form.Controls.Add($RadioButton2);
 $form.Controls.Add($BrowsCSVButton);

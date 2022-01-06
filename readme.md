@@ -1,3 +1,21 @@
+version 2.4
+New features:
+ - add TextField for Output Text file location-----------------(-)
+ - Write operation details as JSON & pack it to zip file-------(-)
+ - load CSP Customer wo AZS subscription from a file to form --(-)
+ - add autosave for thr default Azure Stack tools path in local folder, keeping in computername - path pair, checking
+ - check new script version and display check reslults on start 'Test-PSCOnfig' form
+ 
+ FIXES:
+ - New-PartnerAccessToken - when new PartnerAccessToken created by age condition - KeyVault secret updated incorrectly^
+   the access token created in a session is correct, but related refreshtoken writed in some incorrect form - neet to investigate -fixed
+ - uclear closing  'Test-PSCOnfig' form
+ISSUES:
+ - Any incorrect login try  - unlock ASH subscription creation GUI
+ - Can't create quotas, plans and offer via powershell on the second Azure Stack region
+ - unspecified SQL quotas prevent to start Azure Stack subscription creation on the second region  - where are no SQL RP available
+ - incorrect login cause exception
+
 version 2.3
    New features:
  - add CSP tenant creation function -----------------------(+)
@@ -8,19 +26,16 @@ version 2.3
  - add ability to preview monthly estimate for a tenant----(-)
  - add account password age verification-------------------(+)
  - add ALL accounts age verification ----------------------(-)
- - Write operation details as JSON & pack it to zip file---(-)
+ 
  - add new subscription for a new user of existing tenant--(-)
- - add autosave for thr default Azure Stack tools path in local folder, keeping in ccomputername - path pair, checking
+
+
   Fixes:
 - Get new CSP customer Azure SubscriptionID insteed of Azure Plan subscription ID-----(+)
 - Add RefreshToken secret age check and update for values older then 5 days-----------(+)
 - Add main form close event correct handling - main script exit without errors--------(+)
 
-FIXES:
- - New-PartnerAccessToken - when new PartnerAccessToken created by age condition - KeyVault secret updated incorrectly^
-   the access token created in a session is correct, but related refreshtoken writed in some incorrect form - neet to investigate -fixed
-ISSUES:
-Any incorrect login try  - unlock ASH subscription creation GUI
+
 
 version 2.1
   rewrited for PowerShell Az module
